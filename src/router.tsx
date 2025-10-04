@@ -1,34 +1,33 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RouteWrapper } from "./components/RouteWrapper";
 import { Layout } from "./components/Layout";
 import { ConfigSwitcherPage } from "./pages/ConfigSwitcherPage";
 import { ConfigEditorPage } from "./pages/ConfigEditorPage";
-import { StoreEditPage } from "./pages/StoreEditPage";
-import { ConfigEditorDialog } from "./pages/ConfigEditorDialog";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <RouteWrapper>
+        <Layout />
+      </RouteWrapper>
+    ),
     children: [
       {
         index: true,
-        element: <ConfigSwitcherPage />,
-      },
-      {
-        path: "config/editor",
-        element: <ConfigEditorPage />,
-      },
-      {
-        path: "stores/new",
-        element: <StoreEditPage />,
-      },
-      {
-        path: "stores/:storeName/edit",
-        element: <StoreEditPage />,
+        element: (
+          <RouteWrapper>
+            <ConfigSwitcherPage />
+          </RouteWrapper>
+        ),
       },
       {
         path: "edit/:storeId",
-        element: <ConfigEditorDialog />,
+        element: (
+          <RouteWrapper>
+            <ConfigEditorPage />
+          </RouteWrapper>
+        ),
       },
     ],
   },

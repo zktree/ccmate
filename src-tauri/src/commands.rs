@@ -55,6 +55,7 @@ pub struct ConfigFile {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ConfigStore {
+    pub id: String,
     pub name: String,
     pub created_at: u64,
     pub settings: Value,
@@ -253,7 +254,7 @@ pub async fn get_stores() -> Result<Vec<ConfigStore>, String> {
 }
 
 #[tauri::command]
-pub async fn create_store(name: String, settings: Value) -> Result<ConfigStore, String> {
+pub async fn create_store(id: String, name: String, settings: Value) -> Result<ConfigStore, String> {
     let home_dir = dirs::home_dir().ok_or("Could not find home directory")?;
     let app_config_path = home_dir.join(APP_CONFIG_DIR);
     let stores_file = app_config_path.join("stores.json");
@@ -280,6 +281,7 @@ pub async fn create_store(name: String, settings: Value) -> Result<ConfigStore, 
 
     // Create new store
     let new_store = ConfigStore {
+        id: id.clone(),
         name: name.clone(),
         created_at: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -396,4 +398,13 @@ pub async fn set_using_store(name: String) -> Result<(), String> {
 pub async fn get_current_store() -> Result<Option<ConfigStore>, String> {
     let stores = get_stores().await?;
     Ok(stores.into_iter().find(|store| store.using))
+}
+
+#[tauri::command]
+pub async fn get_store(store_id: String) -> Result<ConfigStore, String> {
+    let stores = get_stores().await?;
+    stores
+        .into_iter()
+        .find(|store| store.id == store_id)
+        .ok_or_else(|| format!("Store with id '{}' not found", store_id))
 }

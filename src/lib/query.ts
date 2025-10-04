@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
+import { nanoid } from "nanoid";
 
 export type ConfigType =
   | "user"
@@ -25,6 +26,7 @@ export interface ClaudeSettings {
 }
 
 export interface ConfigStore {
+  id: string; // nanoid(6)
   name: string;
   created_at: number;
   settings: ClaudeSettings;
@@ -78,12 +80,22 @@ export const useBackupClaudeConfigs = () => {
 
 // Store management hooks
 
-export const useStores = () => {
+export const useStores = (options?: {
+  storeId?: string;
+}) => {
   return useSuspenseQuery({
-    queryKey: ["stores"],
+    queryKey: ["stores", options?.storeId],
     queryFn: () => invoke<ConfigStore[]>("get_stores"),
   });
 };
+
+export const useStore = (storeId: string) => {
+  return useSuspenseQuery({
+    queryKey: ["store", storeId],
+    queryFn: () => invoke<ConfigStore>("get_store", { storeId }),
+  });
+};
+
 
 export const useCurrentStore = () => {
   return useSuspenseQuery({
@@ -96,10 +108,12 @@ export const useCreateStore = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ name, settings }: { name: string; settings: unknown }) =>
-      invoke<ConfigStore>("create_store", { name, settings }),
+    mutationFn: async ({ name, settings }: { name: string; settings: unknown }) => {
+      const id = nanoid(6);
+      return invoke<ConfigStore>("create_store", { id, name, settings });
+    },
     onSuccess: (_, variables) => {
-      toast.success(`Store "${variables.name}" created successfully`);
+      // toast.success(`Store "${variables.name}" created successfully`);
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
     },

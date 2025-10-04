@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { FileJsonIcon, SettingsIcon } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function Layout() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export function Layout() {
               to="/"
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-xl cursor-default select-none pointer-events-none",
+                  "flex items-center gap-2 px-3 py-2 rounded-xl cursor-default select-none",
                   isActive && "bg-primary text-primary-foreground"
                 )
               }
@@ -29,9 +30,11 @@ export function Layout() {
           </li>
         </ul>
       </nav>
-      <main className="flex-1">
-        <Outlet />
-      </main>
+      <ScrollArea className="flex-1 h-screen">
+        <main className="">
+          <Outlet />
+        </main>
+      </ScrollArea>
     </div>
   );
 }

@@ -28,6 +28,7 @@ pub fn run() {
             create_app_config_dir,
             backup_claude_configs,
             get_stores,
+            get_store,
             create_store,
             delete_store,
             set_using_store,
