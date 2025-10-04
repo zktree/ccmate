@@ -58,12 +58,6 @@ pub async fn read_config_file(config_type: String) -> Result<ConfigFile, String>
 
     let path = match config_type.as_str() {
         "user" => home_dir.join(".claude/settings.json"),
-        "project" => std::env::current_dir()
-            .unwrap()
-            .join(".claude/settings.json"),
-        "project_local" => std::env::current_dir()
-            .unwrap()
-            .join(".claude/settings.local.json"),
         "enterprise_macos" => PathBuf::from("/Library/Application Support/ClaudeCode/managed-settings.json"),
         "enterprise_linux" => PathBuf::from("/etc/claude-code/managed-settings.json"),
         "enterprise_windows" => PathBuf::from("C:\\ProgramData\\ClaudeCode\\managed-settings.json"),
@@ -102,18 +96,6 @@ pub async fn write_config_file(config_type: String, content: Value) -> Result<()
 
     let path = match config_type.as_str() {
         "user" => home_dir.join(".claude/settings.json"),
-        "project" => {
-            let project_path = std::env::current_dir().unwrap().join(".claude");
-            std::fs::create_dir_all(&project_path)
-                .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
-            project_path.join("settings.json")
-        },
-        "project_local" => {
-            let project_path = std::env::current_dir().unwrap().join(".claude");
-            std::fs::create_dir_all(&project_path)
-                .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
-            project_path.join("settings.local.json")
-        },
         _ => return Err("Cannot write to enterprise configuration files".to_string()),
     };
 
@@ -138,18 +120,7 @@ pub async fn list_config_files() -> Result<Vec<String>, String> {
         }
     }
 
-    // Project settings
-    let current_dir = std::env::current_dir().unwrap();
-    let project_settings = current_dir.join(".claude/settings.json");
-    if project_settings.exists() {
-        configs.push("project".to_string());
-    }
-
-    let project_local_settings = current_dir.join(".claude/settings.local.json");
-    if project_local_settings.exists() {
-        configs.push("project_local".to_string());
-    }
-
+    
     // Enterprise settings (read-only)
     if cfg!(target_os = "macos") {
         let enterprise_path = PathBuf::from("/Library/Application Support/ClaudeCode/managed-settings.json");

@@ -3,8 +3,6 @@ import { invoke } from "@tauri-apps/api/core";
 
 export type ConfigType =
   | "user"
-  | "project"
-  | "project_local"
   | "enterprise_macos"
   | "enterprise_linux"
   | "enterprise_windows"
