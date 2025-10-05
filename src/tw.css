@@ -114,7 +114,13 @@
   * {
     @apply border-border outline-ring/50 box-border;
   }
-  body {
-    @apply bg-background text-foreground text-[14px];
+  html, body {
+    @apply text-foreground text-[14px];
+    /* background: transparent;
+    overflow: hidden; */
+  }
+  #root {
+    /* @apply rounded-xl overflow-hidden shadow-2xl; */
+    /* min-height: 100vh; */
   }
 }

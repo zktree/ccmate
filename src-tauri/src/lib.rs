@@ -8,7 +8,17 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_store::Builder::default().build())
-        .setup(|_app| {
+        .setup(|app| {
+            // Configure window for macOS
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::Manager;
+                if let Some(window) = app.get_webview_window("main") {
+                    // Set the window to have a transparent title bar
+                    let _ = window.set_title_bar_style(tauri::TitleBarStyle::Overlay);
+                }
+            }
+            
             // Initialize app config on startup
             println!("Setting up app...");
             tauri::async_runtime::spawn(async move {
