@@ -115,10 +115,11 @@ export const useCreateConfig = () => {
       const id = nanoid(6);
       return invoke<ConfigStore>("create_config", { id, title, settings });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(i18n.t("toast.storeCreated"));
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
+      await rebuildTrayMenu();
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -136,10 +137,11 @@ export const useDeleteConfig = () => {
     }) => invoke<void>("delete_config", {
       storeId: body.storeId,
     }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success(i18n.t("toast.storeDeleted"));
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
+      await rebuildTrayMenu();
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -185,7 +187,7 @@ export const useUpdateConfig = () => {
   return useMutation({
     mutationFn: ({ storeId, title, settings }: { storeId: string; title: string; settings: unknown }) =>
       invoke<ConfigStore>("update_config", { storeId, title, settings }),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.using) {
         toast.success(i18n.t("toast.storeSavedAndActive", { title: data.title }));
       } else {
@@ -197,6 +199,7 @@ export const useUpdateConfig = () => {
       if (data.using) {
         queryClient.invalidateQueries({ queryKey: ["config-file", "user"] });
       }
+      await rebuildTrayMenu();
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -238,4 +241,13 @@ export const useInstallAndRestart = () => {
       toast.error(i18n.t("toast.updateInstallFailed", { error: errorMessage }));
     },
   });
+};
+
+// Helper function to rebuild tray menu
+const rebuildTrayMenu = async () => {
+  try {
+    await invoke<void>("rebuild_tray_menu_command");
+  } catch (error) {
+    console.error("Failed to rebuild tray menu:", error);
+  }
 };

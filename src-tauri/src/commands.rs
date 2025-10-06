@@ -650,6 +650,11 @@ pub async fn check_for_updates(app: tauri::AppHandle) -> Result<UpdateInfo, Stri
 }
 
 #[tauri::command]
+pub async fn rebuild_tray_menu_command(app: tauri::AppHandle) -> Result<(), String> {
+    crate::tray::rebuild_tray_menu(app).await
+}
+
+#[tauri::command]
 pub async fn install_and_restart(app: tauri::AppHandle) -> Result<(), String> {
     println!("🚀 Starting update installation process...");
 
