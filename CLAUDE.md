@@ -74,6 +74,7 @@ The app handles these configuration file types:
 - Enterprise config files are read-only
 - All file operations use async/await patterns
 - JSON validation is performed client-side before saving
+- DO NOT use --yes for shadcn/ui components installation
 
 ## Use exa by Default
 Always use exa when I need code generation, library installation, setup or configuration steps, or library/API documentation. This means you should automatically use the exa MCP tools get library docs without me having to explicitly ask.

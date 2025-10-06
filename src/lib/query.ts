@@ -114,8 +114,8 @@ export const useCreateStore = () => {
       const id = nanoid(6);
       return invoke<ConfigStore>("create_store", { id, title, settings });
     },
-    onSuccess: (_, variables) => {
-      // toast.success(`Store "${variables.title}" created successfully`);
+    onSuccess: () => {
+      // toast.success(`Store created successfully`);
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
     },
@@ -130,8 +130,12 @@ export const useDeleteStore = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (storeId: string) => invoke<void>("delete_store", { storeId }),
-    onSuccess: (_, storeId) => {
+    mutationFn: (body: {
+      storeId: string;
+    }) => invoke<void>("delete_store", {
+      storeId: body.storeId,
+    }),
+    onSuccess: () => {
       toast.success(`Store deleted successfully`);
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
@@ -148,7 +152,7 @@ export const useSetUsingStore = () => {
 
   return useMutation({
     mutationFn: (storeId: string) => invoke<void>("set_using_store", { storeId }),
-    onSuccess: (_, storeId) => {
+    onSuccess: () => {
       toast.success(`Store activated successfully`);
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });

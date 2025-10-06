@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { useStores, useSetCurrentStore, useCreateStore } from "../lib/query";
 import { cn } from "@/lib/utils";
 import { PencilLineIcon, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export function ConfigSwitcherPage() {
   return (
@@ -37,10 +37,10 @@ function ConfigStores() {
   if (stores.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <button onClick={onCreateStore} className="flex items-center gap-2 rounded-lg border h-[32px] text-center px-3 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/10 transition-colors duration-100">
+        <Button variant="ghost" onClick={onCreateStore} className="">
           <PlusIcon size={14} />
           新建配置
-        </button>
+        </Button>
       </div>
     )
   }
@@ -48,12 +48,12 @@ function ConfigStores() {
   return (
     <div className="px-4">
       <div className="flex my-4 mt-3" data-tauri-drag-region>
-        <button onClick={onCreateStore} className="flex items-center gap-2 rounded-lg h-[32px] text-center px-3 text-sm hover:bg-primary/10 hover:text-primary transition-colors duration-100">
+        <Button variant="ghost" onClick={onCreateStore} className="" size="sm">
           <PlusIcon size={14} />
           新建配置
-        </button>
+        </Button>
       </div>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 lg:grid-cols-4 gap-3">
         {stores.map((store) => {
           const isCurrentStore = store.using
           return (

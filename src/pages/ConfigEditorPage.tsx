@@ -1,12 +1,12 @@
 import { useForm, Controller } from "react-hook-form";
 import { set, get, transform, isEmpty, isPlainObject } from "lodash-es";
 import { match } from "ts-pattern";
-import { useStore, useUpdateStore } from "../lib/query";
+import { useDeleteStore, useStore, useUpdateStore } from "../lib/query";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Link, useParams } from "react-router-dom";
-import { ChevronLeftIcon, ZapIcon } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ChevronLeftIcon, TrashIcon, ZapIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -36,12 +36,12 @@ function isValidValue(value: any): boolean {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return false;
   }
-  
+
   // Exclude empty strings (trim to handle whitespace-only strings)
   if (typeof value === 'string' && value.trim() === '') {
     return false;
   }
-  
+
   return true;
 }
 
@@ -51,24 +51,24 @@ function deepClean(obj: any): any {
   if (!isPlainObject(obj)) {
     return isValidValue(obj) ? obj : undefined;
   }
-  
+
   // Recursively clean nested objects
   const cleaned = transform(obj, (result: any, value, key) => {
     const cleanedValue = deepClean(value);
-    
+
     // Only add if the cleaned value is valid (not undefined and not an empty object)
     if (cleanedValue !== undefined && !(isPlainObject(cleanedValue) && isEmpty(cleanedValue))) {
       result[key] = cleanedValue;
     }
   }, {});
-  
+
   return cleaned;
 }
 
 // Helper function to convert flat form data to nested JSON using lodash
 function convertToNestedJSON(formData: Record<string, any>) {
   const { configName, ...settings } = formData;
-  
+
   // Transform flat keypaths to nested structure
   const settingsJSON = transform(
     settings,
@@ -77,10 +77,10 @@ function convertToNestedJSON(formData: Record<string, any>) {
     },
     {} as Record<string, any>
   );
-  
+
   // Recursively remove invalid values and empty objects
   const cleanedSettings = deepClean(settingsJSON);
-  
+
   return {
     configName,
     "settings.json": cleanedSettings
@@ -266,7 +266,7 @@ const fields: SectionConfig[] = [
         type: "text",
         description: "Custom headers to add to the request (in 'Name: Value' format)"
       },
-      
+
       {
         label: "ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION",
         name: "env.ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION",
@@ -569,9 +569,11 @@ const fields: SectionConfig[] = [
 
 export function ConfigEditorPage() {
   const { storeId } = useParams();
+  const navigate = useNavigate();
 
   const storeQuery = useStore(storeId!);
   const updateStore = useUpdateStore();
+  const deleteStore = useDeleteStore();
 
   const storeData = storeQuery.data;
 
@@ -592,7 +594,7 @@ export function ConfigEditorPage() {
 
   const applyPreset = (preset: 'glm' | 'kimi') => {
     console.log('Applying preset:', preset);
-    
+
     if (preset === 'glm') {
       setValue('env.ANTHROPIC_BASE_URL', 'https://open.bigmodel.cn/api/anthropic');
       setValue('env.ANTHROPIC_MODEL', 'GLM-4.6');
@@ -640,29 +642,52 @@ export function ConfigEditorPage() {
     });
   });
 
+  const onDelete = async () => {
+    await deleteStore.mutateAsync({
+      storeId: storeId!,
+    });
+    navigate("/");
+  };
+
   return (
     <div className="space-y-4 ">
-      <nav className="px-2 py-2 flex items-center justify-between sticky top-0 bg-background z-10 border-b" data-tauri-drag-region>
-        <Link to="/" className="inline-flex items-center gap-1 cursor-default hover:bg-zinc-50 rounded-lg p-2">
-          <ChevronLeftIcon size={14} className="text-muted-foreground" />
-          <span className="text-muted-foreground text-sm">所有配置</span>
-        </Link>
-        <Button 
-          onClick={onSave} 
-          disabled={updateStore.isPending}
-          size="sm"
-          className="mr-2"
-        >
-          保存
+      <nav className="px-2 py-3 flex items-center justify-between sticky top-0 bg-background z-10 border-b" data-tauri-drag-region>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/" className="">
+            <ChevronLeftIcon size={14} className="text-muted-foreground" />
+            <span className="text-muted-foreground">所有配置</span>
+          </Link>
         </Button>
+
+        <div className="mr-2 flex items-center gap-2">
+         
+          <Button
+            onClick={onDelete}
+            disabled={deleteStore.isPending}
+            variant="ghost"
+            size="sm"
+            className=""
+          >
+            <TrashIcon size={14} className="text-muted-foreground" />
+          </Button>
+
+          <Button
+            onClick={onSave}
+            disabled={updateStore.isPending}
+            size="sm"
+          >
+            保存
+          </Button>
+
+        </div>
       </nav>
 
       <section className="px-8">
         <h3 className="pb-2 font-medium mx-2 text-muted-foreground text-sm">配置名</h3>
-        <input 
-          {...register("configName")} 
-          type="text" 
-          className="text-sm px-2 text-muted-foreground border rounded-sm w-[200px] h-7 bg-white" 
+        <input
+          {...register("configName")}
+          type="text"
+          className="text-sm px-2 text-muted-foreground border rounded-sm w-[200px] h-7 bg-white"
         />
       </section>
       <section className="space-y-8 pb-8">
@@ -685,7 +710,7 @@ export function ConfigEditorPage() {
                           name={field.name}
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <Select 
+                            <Select
                               value={value !== undefined ? String(value) : undefined}
                               onValueChange={(val) => onChange(val === "true")}
                             >
@@ -721,18 +746,18 @@ export function ConfigEditorPage() {
                         />
                       ))
                       .with({ type: 'textarea' }, () => (
-                        <Textarea 
-                          {...register(field.name)} 
+                        <Textarea
+                          {...register(field.name)}
                           className={`w-1/2 text-sm ${highlightedField === field.name ? 'animate-blink' : ''}`}
                           placeholder={field.placeholder}
                         />
                       ))
                       .with({ type: 'number' }, () => (
-                        <Input 
-                          {...register(field.name, { 
+                        <Input
+                          {...register(field.name, {
                             setValueAs: (v) => v === '' ? undefined : Number(v)
-                          })} 
-                          type="number" 
+                          })}
+                          type="number"
                           className={`text-sm w-1/2 h-7 ${highlightedField === field.name ? 'animate-blink' : ''}`}
                           placeholder={field.placeholder}
                         />
@@ -759,9 +784,9 @@ export function ConfigEditorPage() {
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                          <Input 
-                            {...register(field.name)} 
-                            type="text" 
+                          <Input
+                            {...register(field.name)}
+                            type="text"
                             className={`text-sm h-7 flex-1 ${highlightedField === field.name ? 'animate-blink' : ''}`}
                             placeholder={field.placeholder}
                           />
@@ -773,9 +798,9 @@ export function ConfigEditorPage() {
                           console.log('Highlighting field:', field.name, 'with class:', className);
                         }
                         return (
-                          <Input 
-                            {...register(field.name)} 
-                            type="text" 
+                          <Input
+                            {...register(field.name)}
+                            type="text"
                             className={className}
                             placeholder={field.placeholder}
                           />

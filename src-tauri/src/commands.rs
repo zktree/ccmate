@@ -294,8 +294,8 @@ pub async fn get_stores() -> Result<Vec<ConfigStore>, String> {
         .map_err(|e| format!("Failed to parse stores file: {}", e))?;
 
     let mut stores_vec = stores_data.configs;
-    // Sort by createdAt in descending order (newest first)
-    stores_vec.sort_by(|a, b| b.createdAt.cmp(&a.createdAt));
+    // Sort by createdAt in ascending order (oldest first)
+    stores_vec.sort_by(|a, b| a.createdAt.cmp(&b.createdAt));
 
     Ok(stores_vec)
 }
@@ -321,6 +321,25 @@ pub async fn create_store(id: String, title: String, settings: Value) -> Result<
         StoresData { configs: vec![] }
     };
 
+    // Determine if this should be the active store (true if no other stores exist)
+    let should_be_active = stores_data.configs.is_empty();
+
+    // If this is the first store (and therefore active), write its settings to the user's actual settings.json
+    if should_be_active {
+        let user_settings_path = home_dir.join(".claude/settings.json");
+        let json_content = serde_json::to_string_pretty(&settings)
+            .map_err(|e| format!("Failed to serialize settings: {}", e))?;
+
+        // Create .claude directory if it doesn't exist
+        if let Some(parent) = user_settings_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
+        }
+
+        std::fs::write(&user_settings_path, json_content)
+            .map_err(|e| format!("Failed to write user settings: {}", e))?;
+    }
+
     // Create new store
     let new_store = ConfigStore {
         id: id.clone(),
@@ -330,13 +349,13 @@ pub async fn create_store(id: String, title: String, settings: Value) -> Result<
             .map_err(|e| format!("Failed to get timestamp: {}", e))?
             .as_secs(),
         settings,
-        using: false,
+        using: should_be_active,
     };
 
     // Add store to collection
     stores_data.configs.push(new_store.clone());
 
-    // Write back to file
+    // Write back to stores file
     let json_content = serde_json::to_string_pretty(&stores_data)
         .map_err(|e| format!("Failed to serialize stores: {}", e))?;
 
@@ -478,12 +497,12 @@ pub async fn update_store(store_id: String, title: String, settings: Value) -> R
         .position(|store| store.id == store_id)
         .ok_or_else(|| format!("Store with id '{}' not found", store_id))?;
 
-    // Check if new title conflicts with existing stores (excluding current one)
-    for existing_store in &stores_data.configs {
-        if existing_store.id != store_id && existing_store.title == title {
-            return Err("Store with this title already exists".to_string());
-        }
-    }
+    // // Check if new title conflicts with existing stores (excluding current one)
+    // for existing_store in &stores_data.configs {
+    //     if existing_store.id != store_id && existing_store.title == title {
+    //         return Err("Store with this title already exists".to_string());
+    //     }
+    // }
 
     // Update the store
     let store = &mut stores_data.configs[store_index];
