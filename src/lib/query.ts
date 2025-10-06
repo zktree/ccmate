@@ -107,13 +107,13 @@ export const useCurrentStore = () => {
   });
 };
 
-export const useCreateStore = () => {
+export const useCreateConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ title, settings }: { title: string; settings: unknown }) => {
       const id = nanoid(6);
-      return invoke<ConfigStore>("create_store", { id, title, settings });
+      return invoke<ConfigStore>("create_config", { id, title, settings });
     },
     onSuccess: () => {
       toast.success(i18n.t("toast.storeCreated"));
@@ -127,13 +127,13 @@ export const useCreateStore = () => {
   });
 };
 
-export const useDeleteStore = () => {
+export const useDeleteConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (body: {
       storeId: string;
-    }) => invoke<void>("delete_store", {
+    }) => invoke<void>("delete_config", {
       storeId: body.storeId,
     }),
     onSuccess: () => {
@@ -148,11 +148,11 @@ export const useDeleteStore = () => {
   });
 };
 
-export const useSetUsingStore = () => {
+export const useSetUsingConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (storeId: string) => invoke<void>("set_using_store", { storeId }),
+    mutationFn: (storeId: string) => invoke<void>("set_using_config", { storeId }),
     onSuccess: () => {
       toast.success(i18n.t("toast.storeActivated"));
       queryClient.invalidateQueries({ queryKey: ["stores"] });
@@ -166,11 +166,11 @@ export const useSetUsingStore = () => {
   });
 };
 
-export const useSetCurrentStore = () => {
+export const useSetCurrentConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (storeId: string) => invoke<void>("set_using_store", { storeId }),
+    mutationFn: (storeId: string) => invoke<void>("set_using_config", { storeId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });
@@ -179,12 +179,12 @@ export const useSetCurrentStore = () => {
   });
 };
 
-export const useUpdateStore = () => {
+export const useUpdateConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ storeId, title, settings }: { storeId: string; title: string; settings: unknown }) =>
-      invoke<ConfigStore>("update_store", { storeId, title, settings }),
+      invoke<ConfigStore>("update_config", { storeId, title, settings }),
     onSuccess: (data) => {
       if (data.using) {
         toast.success(i18n.t("toast.storeSavedAndActive", { title: data.title }));
