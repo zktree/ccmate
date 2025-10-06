@@ -1,24 +1,26 @@
 import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "../lib/utils";
 import { FileJsonIcon, SettingsIcon } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { UpdateButton } from "./UpdateButton";
 
-const navLinks = [
-  {
-    to: "/",
-    icon: FileJsonIcon,
-    label: "配置"
-  },
-  {
-    to: "/settings",
-    icon: SettingsIcon,
-    label: "设置"
-  }
-]
-
 export function Layout() {
+  const { t } = useTranslation();
+
+  const navLinks = [
+    {
+      to: "/",
+      icon: FileJsonIcon,
+      label: t("navigation.home")
+    },
+    {
+      to: "/settings",
+      icon: SettingsIcon,
+      label: t("navigation.settings")
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

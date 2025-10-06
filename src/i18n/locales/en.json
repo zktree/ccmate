@@ -1,0 +1,18 @@
+{
+  "app.title": "Claude Code Configuration Manager",
+  "navigation.home": "Home",
+  "navigation.settings": "Settings",
+  "config.type.user": "User Configuration",
+  "config.type.enterprise": "Enterprise Configuration",
+  "config.type.mcp": "MCP Configuration",
+  "config.save": "Save Configuration",
+  "config.backup": "Backup Configuration",
+  "config.restore": "Restore Configuration",
+  "error.validation": "Invalid JSON format",
+  "error.save": "Failed to save configuration",
+  "success.save": "Configuration saved successfully",
+  "loading": "Loading...",
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.theme": "Theme"
+}

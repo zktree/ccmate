@@ -1,0 +1,18 @@
+{
+  "app.title": "Claude 代码配置管理器",
+  "navigation.home": "首页",
+  "navigation.settings": "设置",
+  "config.type.user": "用户配置",
+  "config.type.enterprise": "企业配置",
+  "config.type.mcp": "MCP 配置",
+  "config.save": "保存配置",
+  "config.backup": "备份配置",
+  "config.restore": "恢复配置",
+  "error.validation": "JSON 格式无效",
+  "error.save": "保存配置失败",
+  "success.save": "配置保存成功",
+  "loading": "加载中...",
+  "settings.title": "设置",
+  "settings.language": "语言",
+  "settings.theme": "主题"
+}
