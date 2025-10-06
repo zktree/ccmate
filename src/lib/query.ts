@@ -186,7 +186,11 @@ export const useUpdateStore = () => {
     mutationFn: ({ storeId, title, settings }: { storeId: string; title: string; settings: unknown }) =>
       invoke<ConfigStore>("update_store", { storeId, title, settings }),
     onSuccess: (data) => {
-      toast.success(i18n.t("toast.storeSaved", { title: data.title }));
+      if (data.using) {
+        toast.success(i18n.t("toast.storeSavedAndActive", { title: data.title }));
+      } else {
+        toast.success(i18n.t("toast.storeSaved", { title: data.title }));
+      }
       queryClient.invalidateQueries({ queryKey: ["stores"] });
       queryClient.invalidateQueries({ queryKey: ["store", data.id] });
       queryClient.invalidateQueries({ queryKey: ["current-store"] });

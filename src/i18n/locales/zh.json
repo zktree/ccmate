@@ -41,6 +41,7 @@
   "toast.storeActivated": "配置激活成功",
   "toast.storeActivateFailed": "切换配置失败：{{error}}",
   "toast.storeSaved": "配置 \"{{title}}\" 保存成功",
+  "toast.storeSavedAndActive": "配置 \"{{title}}\" 保存成功。配置已应用，请重启 Claude Code 会话",
   "toast.storeSaveFailed": "保存配置失败：{{error}}",
   "toast.updateInstalled": "更新安装成功，正在重启...",
   "toast.updateInstallFailed": "安装更新失败：{{error}}"

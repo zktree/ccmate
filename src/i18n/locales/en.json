@@ -41,6 +41,7 @@
   "toast.storeActivated": "Config activated successfully",
   "toast.storeActivateFailed": "Failed to switch config: {{error}}",
   "toast.storeSaved": "Config \"{{title}}\" saved successfully",
+  "toast.storeSavedAndActive": "Config \"{{title}}\" saved successfully. Config has applied, please restart the Claude Code session",
   "toast.storeSaveFailed": "Failed to save config: {{error}}",
   "toast.updateInstalled": "Update installed successfully. Restarting...",
   "toast.updateInstallFailed": "Failed to install update: {{error}}"
