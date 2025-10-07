@@ -8,10 +8,12 @@ import { CircleQuestionMarkIcon, ExternalLinkIcon } from "lucide-react"
 import { Input } from "./ui/input"
 import { useCreateConfig, useSetCurrentConfig } from "@/lib/query"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 export function GLMBanner(props: {
   className?: string
 }) {
+  const { i18n } = useTranslation()
   const [isDismissed, setIsDismissed] = useState(localStorage.getItem('glm-banner-dismissed') === 'true')
 
   const handleDismiss = () => {
@@ -19,7 +21,8 @@ export function GLMBanner(props: {
     setIsDismissed(true)
   }
 
-  if (isDismissed) {
+  // Only show banner when locale is Chinese
+  if (i18n.language !== 'zh' || isDismissed) {
     return null
   }
 
