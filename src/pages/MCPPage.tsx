@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { HammerIcon, PlusIcon, SaveIcon } from "lucide-react";
+import { ExternalLinkIcon, HammerIcon, PlusIcon, SaveIcon } from "lucide-react";
 import { useGlobalMcpServers, useUpdateGlobalMcpServer, type McpServer } from "@/lib/query";
 import { toast } from "sonner";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
-export function MCPPage() {
-  const { data: mcpServers, isLoading, error } = useGlobalMcpServers();
+function MCPPageContent() {
+  const { data: mcpServers } = useGlobalMcpServers();
   const updateMcpServer = useUpdateGlobalMcpServer();
   const [serverConfigs, setServerConfigs] = useState<Record<string, string>>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -37,28 +36,10 @@ export function MCPPage() {
     }
   };
 
-  
+
   const formatConfigForDisplay = (server: McpServer): string => {
     return JSON.stringify(server, null, 2);
   };
-
-  if (isLoading) {
-    return (
-      <div className="p-4">
-        <div className="text-center">Loading MCP servers...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4">
-        <div className="text-center text-red-500">
-          Failed to load MCP servers: {error.message}
-        </div>
-      </div>
-    );
-  }
 
   const serverEntries = Object.entries(mcpServers || {});
 
@@ -78,21 +59,24 @@ export function MCPPage() {
               添加 MCP 服务
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[700px]">
             <DialogHeader>
-              <DialogTitle>添加新的 MCP 服务</DialogTitle>
+              <DialogTitle className="text-primary text-sm">添加 MCP 服务</DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm">
+                添加全局 MCP 服务，可跨项目使用
+              </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-              <p className="text-muted-foreground">添加新的 MCP 服务功能正在开发中...</p>
+            <div className="py-3">
+              <MCPCreatePanel />
             </div>
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
               <Button
                 variant="outline"
                 onClick={() => setIsDialogOpen(false)}
               >
                 关闭
               </Button>
-            </div>
+            </div> */}
           </DialogContent>
         </Dialog>
       </div>
@@ -137,6 +121,72 @@ export function MCPPage() {
             ))}
           </Accordion>
         )}
+      </div>
+    </div>
+  );
+}
+
+export function MCPPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">Loading MCP servers...</div>
+      </div>
+    }>
+      <MCPPageContent />
+    </Suspense>
+  );
+}
+
+const builtInMcpServers = [
+  {
+    name: "exa",
+    source: "https://docs.exa.ai/reference/exa-mcp",
+    description: "fast, efficient web context for coding agents",
+    prefill: ``
+  },
+  {
+    name: "context7",
+    source: "https://github.com/upstash/context7",
+    description: "Up-to-date code documentation for LLMs and AI code editors",
+    prefill: ``
+  },
+  {
+    name: "github",
+    source: "https://github.com/github/github-mcp-server",
+    description: "GitHub's official MCP Server",
+    prefill: ``
+  }
+];
+
+function MCPCreatePanel() {
+  return (
+    <div className="">
+      <div className="grid grid-cols-3 gap-5">
+        {builtInMcpServers.map((mcpServer) => (
+          <a role="button" key={mcpServer.name} className="border p-3 rounded-md h-[120px] flex justify-between flex-col hover:bg-primary/10 hover:border-primary/20 hover:text-primary">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-primary">{mcpServer.name}</h3>
+              <a onClick={e => {
+                e.stopPropagation()
+                openUrl(mcpServer.source)
+              }} className="text-sm text-muted-foreground flex items-center gap-1 hover:underline">
+                <ExternalLinkIcon size={12} />
+                Source
+              </a>
+            </div>
+            <div>
+
+            </div>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">{mcpServer.description}</p>
+              {/* <Button size="sm" variant="outline" className="w-full text-sm">
+                <PlusIcon />
+                添加
+              </Button> */}
+            </div>
+          </a>
+        ))}
       </div>
     </div>
   );

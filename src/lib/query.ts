@@ -250,7 +250,7 @@ export const useInstallAndRestart = () => {
 // MCP Server management hooks
 
 export const useGlobalMcpServers = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["global-mcp-servers"],
     queryFn: () => invoke<Record<string, McpServer>>("get_global_mcp_servers"),
   });

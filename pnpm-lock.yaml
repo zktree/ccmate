@@ -54,7 +54,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0
       '@tauri-apps/plugin-opener':
-        specifier: ^2
+        specifier: ^2.5.0
         version: 2.5.0
       '@tauri-apps/plugin-updater':
         specifier: ~2
