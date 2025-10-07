@@ -4,13 +4,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ExternalLinkIcon, HammerIcon, PlusIcon, SaveIcon, TrashIcon } from "lucide-react";
 import { useGlobalMcpServers, useUpdateGlobalMcpServer, useAddGlobalMcpServer, useDeleteGlobalMcpServer, type McpServer } from "@/lib/query";
-import { toast } from "sonner";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ask, message } from "@tauri-apps/plugin-dialog";
 import { match } from "ts-pattern";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { vscodeLight } from "@uiw/codemirror-theme-vscode";
+
 
 function MCPPageContent() {
   const { data: mcpServers } = useGlobalMcpServers();
@@ -26,7 +26,7 @@ function MCPPageContent() {
     }));
   };
 
-  const handleSaveConfig = (serverName: string) => {
+  const handleSaveConfig = async (serverName: string) => {
     const configText = serverConfigs[serverName];
     if (!configText) return;
 
@@ -37,7 +37,10 @@ function MCPPageContent() {
         serverConfig: configObject
       });
     } catch (error) {
-      toast.error(`Invalid JSON configuration for ${serverName}`);
+      await message(`Invalid JSON configuration for ${serverName}`, {
+        title: "Invalid JSON",
+        kind: "error"
+      });
     }
   };
 
@@ -278,10 +281,10 @@ function RecommendMCPPanel({ onClose }: { onClose?: () => void }) {
       }
     } catch (error) {
       console.error("Failed to add MCP server:", error);
-      // Only show toast for unexpected errors, not duplicate server errors
-      if (error instanceof Error && !error.message.includes("already exists")) {
-        toast.error("Failed to add MCP server");
-      }
+      await message("Failed to add MCP server", {
+        title: "Error",
+        kind: "error"
+      });
     }
   };
 
@@ -392,9 +395,10 @@ function CustomMCPPanel({ onClose }: { onClose?: () => void }) {
       }
     } catch (error) {
       console.error("Failed to add custom MCP servers:", error);
-      if (error instanceof Error && !error.message.includes("already exists")) {
-        toast.error("Failed to add MCP servers");
-      }
+      await message("Failed to add MCP servers", {
+        title: "Error",
+        kind: "error"
+      });
     }
   };
 
