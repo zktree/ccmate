@@ -157,6 +157,8 @@ pub fn run() {
             set_using_config,
             get_current_store,
             open_config_path,
+            get_global_mcp_servers,
+            update_global_mcp_server,
             check_for_updates,
             install_and_restart,
             rebuild_tray_menu_command
