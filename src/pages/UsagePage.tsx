@@ -5,7 +5,7 @@ import { ProjectUsageRecord } from "@/lib/query";
 import { cn, formatLargeNumber } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { RefreshCwIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, CircleDotDashedIcon, RefreshCwIcon } from "lucide-react";
 
 export function UsagePage() {
   const { t } = useTranslation();
@@ -30,11 +30,11 @@ export function UsagePage() {
         </div>
 
         <div>
-          <Button 
-          disabled={isRefetching || isLoading}
-          onClick={_ => {
-            refetch();
-          }} variant="ghost" size="sm" className="text-muted-foreground">
+          <Button
+            disabled={isRefetching || isLoading}
+            onClick={_ => {
+              refetch();
+            }} variant="ghost" size="sm" className="text-muted-foreground">
             <RefreshCwIcon className={cn({
               "animate-spin": isRefetching || isLoading,
             })} />
@@ -62,20 +62,29 @@ export function UsagePage() {
         ) : usageData && usageData.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-zinc-50 p-4 rounded-lg space-y-2">
-                <h3 className="font-medium">{t("usage.inputTokens")}</h3>
+              <div className="bg-blue-50 border-blue-100 text-blue-700 border-2 p-4 rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <ArrowDownIcon size={12} />
+                  <h3 className="font-medium">{t("usage.inputTokens")}</h3>
+                </div>
                 <p className="text-2xl font-bold">
                   {formatLargeNumber(filteredUsageData.reduce((sum, record) => sum + (record.usage?.input_tokens || 0), 0))}
                 </p>
               </div>
-              <div className="bg-zinc-50 p-4 rounded-lg space-y-2">
-                <h3 className="font-medium">{t("usage.outputTokens")}</h3>
+              <div className="bg-emerald-50 border-emerald-100 text-emerald-700 border-2 p-4 rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <ArrowUpIcon size={12} />
+                  <h3 className="font-medium">{t("usage.outputTokens")}</h3>
+                </div>
                 <p className="text-2xl font-bold">
                   {formatLargeNumber(filteredUsageData.reduce((sum, record) => sum + (record.usage?.output_tokens || 0), 0))}
                 </p>
               </div>
-              <div className="bg-zinc-50 p-4 rounded-lg space-y-2">
-                <h3 className="font-medium">{t("usage.cacheReadTokens")}</h3>
+              <div className="bg-amber-50 border-amber-100 text-amber-700 border-2 p-4 rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <CircleDotDashedIcon size={12} />
+                  <h3 className="font-medium">{t("usage.cacheReadTokens")}</h3>
+                </div>
                 <p className="text-2xl font-bold">
                   {formatLargeNumber(filteredUsageData.reduce((sum, record) => sum + (record.usage?.cache_read_input_tokens || 0), 0))}
                 </p>
