@@ -126,5 +126,17 @@
   "projects.detail.backToProjects": "プロジェクトに戻る",
   "projects.detail.save": "保存",
   "projects.detail.saving": "保存中...",
-  "projects.detail.noProjectsMessage": "開いている Claude Code プロジェクトがありません。プロジェクトで `claude` コマンドを実行すると、プロジェクトがここに自動的に表示されます。"
+  "projects.detail.noProjectsMessage": "開いている Claude Code プロジェクトがありません。プロジェクトで `claude` コマンドを実行すると、プロジェクトがここに自動的に表示されます。",
+  "notifications.title": "通知",
+  "notifications.description": "Claude Code の通知を受け取る",
+  "notifications.general": "一般通知",
+  "notifications.generalDescription": "Claude Code が通知を送信する際に通知",
+  "notifications.toolUse": "ツール使用通知",
+  "notifications.toolUseDescription": "Claude Code がツールを使用する際に通知",
+  "notifications.completion": "完了通知",
+  "notifications.completionDescription": "Claude Code がタスクを完了した際に通知",
+  "notifications.sending": "送信中...",
+  "notifications.testGeneral": "テスト通知",
+  "notifications.testToolUse": "ツール使用テスト",
+  "notifications.testCompletion": "完了テスト"
 }

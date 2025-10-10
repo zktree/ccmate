@@ -447,17 +447,11 @@ export const useSendTestNotification = () => {
       return invoke<void>("send_test_notification", { hookType });
     },
     onSuccess: (_, hookType) => {
-      const hookTypeMap: Record<string, string> = {
-        general: "一般通知",
-        PreToolUse: "工具使用通知",
-        Stop: "完成通知",
-      };
-      const hookTypeName = hookTypeMap[hookType] || hookType;
-      toast.success(`${hookTypeName}测试通知已发送`);
+      toast.success(`Test notification sent`);
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      toast.error(`发送测试通知失败: ${errorMessage}`);
+      toast.error(`Failed to send test notification: ${errorMessage}`);
     },
   });
 };

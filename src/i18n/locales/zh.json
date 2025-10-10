@@ -134,5 +134,9 @@
   "notifications.toolUse": "工具使用通知",
   "notifications.toolUseDescription": "当 Claude Code 使用工具时提醒",
   "notifications.completion": "完成时通知",
-  "notifications.completionDescription": "当 Claude Code 完成任务时提醒"
+  "notifications.completionDescription": "当 Claude Code 完成任务时提醒",
+  "notifications.sending": "发送中...",
+  "notifications.testGeneral": "测试通知",
+  "notifications.testToolUse": "测试工具使用",
+  "notifications.testCompletion": "测试完成"
 }

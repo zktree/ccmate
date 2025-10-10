@@ -135,5 +135,9 @@
   "notifications.toolUse": "Tool Use Notifications",
   "notifications.toolUseDescription": "Notify when Claude Code is using tools",
   "notifications.completion": "Completion Notifications",
-  "notifications.completionDescription": "Notify when Claude Code completes tasks"
+  "notifications.completionDescription": "Notify when Claude Code completes tasks",
+  "notifications.sending": "Sending...",
+  "notifications.testGeneral": "Test Notification",
+  "notifications.testToolUse": "Test Tool Use",
+  "notifications.testCompletion": "Test Completion"
 }

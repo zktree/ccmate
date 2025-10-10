@@ -101,7 +101,7 @@ export function NotificationPage() {
                 onClick={() => handleTestNotification("general")}
                 disabled={sendTestNotification.isPending}
               >
-                {sendTestNotification.isPending ? "发送中..." : "测试通知"}
+                {sendTestNotification.isPending ? t("notifications.sending") : t("notifications.testGeneral")}
               </Button>
               <Switch
                 id="notification"
@@ -116,7 +116,7 @@ export function NotificationPage() {
         </div>
         <div className="border-b px-1 py-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="preToolUse" className="">{t("notifications.toolUse")}</Label>
+            <Label htmlFor="preToolUse" className="">{t("notifications.testGeneral")}</Label>
             <div className="flex items-center gap-4">
               <Button
                 size="sm"
@@ -124,7 +124,7 @@ export function NotificationPage() {
                 onClick={() => handleTestNotification("PreToolUse")}
                 disabled={sendTestNotification.isPending}
               >
-                {sendTestNotification.isPending ? "发送中..." : "测试通知"}
+                {sendTestNotification.isPending ? t("notifications.sending") : t("notifications.testGeneral")}
               </Button>
               <Switch
                 id="preToolUse"
@@ -148,7 +148,7 @@ export function NotificationPage() {
                 onClick={() => handleTestNotification("Stop")}
                 disabled={sendTestNotification.isPending}
               >
-                {sendTestNotification.isPending ? "发送中..." : "测试通知"}
+                {sendTestNotification.isPending ? t("notifications.sending") : t("notifications.testGeneral")}
               </Button>
               <Switch
                 id="stop"

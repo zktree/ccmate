@@ -126,5 +126,17 @@
   "projects.detail.backToProjects": "Retour aux projets",
   "projects.detail.save": "Sauvegarder",
   "projects.detail.saving": "Sauvegarde...",
-  "projects.detail.noProjectsMessage": "Aucun projet Claude Code ouvert. Les projets apparaîtront automatiquement ici après avoir exécuté la commande `claude` dans un projet."
+  "projects.detail.noProjectsMessage": "Aucun projet Claude Code ouvert. Les projets apparaîtront automatiquement ici après avoir exécuté la commande `claude` dans un projet.",
+  "notifications.title": "Notifications",
+  "notifications.description": "Recevoir les notifications de Claude Code",
+  "notifications.general": "Notifications générales",
+  "notifications.generalDescription": "Notifier lorsque Claude Code envoie des notifications",
+  "notifications.toolUse": "Notifications d'utilisation d'outils",
+  "notifications.toolUseDescription": "Notifier lorsque Claude Code utilise des outils",
+  "notifications.completion": "Notifications de complétion",
+  "notifications.completionDescription": "Notifier lorsque Claude Code termine des tâches",
+  "notifications.sending": "Envoi en cours...",
+  "notifications.testGeneral": "Tester la notification",
+  "notifications.testToolUse": "Tester l'utilisation d'outils",
+  "notifications.testCompletion": "Tester la complétion"
 }
