@@ -386,17 +386,45 @@ pub async fn create_config(
     // Determine if this should be the active store (true if no other stores exist)
     let should_be_active = stores_data.configs.is_empty();
 
-    // If this is the first store (and therefore active), write its settings to the user's actual settings.json
+    // If this is the first store (and therefore active), write its settings to the user's actual settings.json with partial update
     if should_be_active {
         let user_settings_path = home_dir.join(".claude/settings.json");
-        let json_content = serde_json::to_string_pretty(&settings)
-            .map_err(|e| format!("Failed to serialize settings: {}", e))?;
 
         // Create .claude directory if it doesn't exist
         if let Some(parent) = user_settings_path.parent() {
             std::fs::create_dir_all(parent)
                 .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
         }
+
+        // Read existing settings if file exists, otherwise start with empty object
+        let mut existing_settings = if user_settings_path.exists() {
+            let content = std::fs::read_to_string(&user_settings_path)
+                .map_err(|e| format!("Failed to read existing settings: {}", e))?;
+            serde_json::from_str(&content)
+                .map_err(|e| format!("Failed to parse existing settings: {}", e))?
+        } else {
+            serde_json::Value::Object(serde_json::Map::new())
+        };
+
+        // Merge the new settings into existing settings (partial update)
+        if let Some(settings_obj) = settings.as_object() {
+            if let Some(existing_obj) = existing_settings.as_object_mut() {
+                // Update only the keys present in the stored settings
+                for (key, value) in settings_obj {
+                    existing_obj.insert(key.clone(), value.clone());
+                }
+            } else {
+                // If existing settings is not an object, replace it entirely
+                existing_settings = settings.clone();
+            }
+        } else {
+            // If stored settings is not an object, replace existing entirely
+            existing_settings = settings.clone();
+        }
+
+        // Write the merged settings back to file
+        let json_content = serde_json::to_string_pretty(&existing_settings)
+            .map_err(|e| format!("Failed to serialize merged settings: {}", e))?;
 
         std::fs::write(&user_settings_path, json_content)
             .map_err(|e| format!("Failed to write user settings: {}", e))?;
@@ -501,17 +529,45 @@ pub async fn set_using_config(store_id: String) -> Result<(), String> {
         }
     }
 
-    // Write the selected store's settings to the user's actual settings.json
+    // Write the selected store's settings to the user's actual settings.json with partial update
     if let Some(settings) = selected_store_settings {
         let user_settings_path = home_dir.join(".claude/settings.json");
-        let json_content = serde_json::to_string_pretty(&settings)
-            .map_err(|e| format!("Failed to serialize settings: {}", e))?;
 
         // Create .claude directory if it doesn't exist
         if let Some(parent) = user_settings_path.parent() {
             std::fs::create_dir_all(parent)
                 .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
         }
+
+        // Read existing settings if file exists, otherwise start with empty object
+        let mut existing_settings = if user_settings_path.exists() {
+            let content = std::fs::read_to_string(&user_settings_path)
+                .map_err(|e| format!("Failed to read existing settings: {}", e))?;
+            serde_json::from_str(&content)
+                .map_err(|e| format!("Failed to parse existing settings: {}", e))?
+        } else {
+            serde_json::Value::Object(serde_json::Map::new())
+        };
+
+        // Merge the new settings into existing settings (partial update)
+        if let Some(settings_obj) = settings.as_object() {
+            if let Some(existing_obj) = existing_settings.as_object_mut() {
+                // Update only the keys present in the stored settings
+                for (key, value) in settings_obj {
+                    existing_obj.insert(key.clone(), value.clone());
+                }
+            } else {
+                // If existing settings is not an object, replace it entirely
+                existing_settings = settings.clone();
+            }
+        } else {
+            // If stored settings is not an object, replace existing entirely
+            existing_settings = settings.clone();
+        }
+
+        // Write the merged settings back to file
+        let json_content = serde_json::to_string_pretty(&existing_settings)
+            .map_err(|e| format!("Failed to serialize merged settings: {}", e))?;
 
         std::fs::write(&user_settings_path, json_content)
             .map_err(|e| format!("Failed to write user settings: {}", e))?;
@@ -582,11 +638,45 @@ pub async fn update_config(
     store.title = title.clone();
     store.settings = settings.clone();
 
-    // If this store is currently in use, also update the user's settings.json
+    // If this store is currently in use, also update the user's settings.json with partial update
     if store.using {
         let user_settings_path = home_dir.join(".claude/settings.json");
-        let json_content = serde_json::to_string_pretty(&settings)
-            .map_err(|e| format!("Failed to serialize settings: {}", e))?;
+
+        // Create .claude directory if it doesn't exist
+        if let Some(parent) = user_settings_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
+        }
+
+        // Read existing settings if file exists, otherwise start with empty object
+        let mut existing_settings = if user_settings_path.exists() {
+            let content = std::fs::read_to_string(&user_settings_path)
+                .map_err(|e| format!("Failed to read existing settings: {}", e))?;
+            serde_json::from_str(&content)
+                .map_err(|e| format!("Failed to parse existing settings: {}", e))?
+        } else {
+            serde_json::Value::Object(serde_json::Map::new())
+        };
+
+        // Merge the new settings into existing settings (partial update)
+        if let Some(settings_obj) = settings.as_object() {
+            if let Some(existing_obj) = existing_settings.as_object_mut() {
+                // Update only the keys present in the stored settings
+                for (key, value) in settings_obj {
+                    existing_obj.insert(key.clone(), value.clone());
+                }
+            } else {
+                // If existing settings is not an object, replace it entirely
+                existing_settings = settings.clone();
+            }
+        } else {
+            // If stored settings is not an object, replace existing entirely
+            existing_settings = settings.clone();
+        }
+
+        // Write the merged settings back to file
+        let json_content = serde_json::to_string_pretty(&existing_settings)
+            .map_err(|e| format!("Failed to serialize merged settings: {}", e))?;
 
         std::fs::write(&user_settings_path, json_content)
             .map_err(|e| format!("Failed to write user settings: {}", e))?;
