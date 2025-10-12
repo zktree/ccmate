@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import { cn, isMacOS } from "../lib/utils";
 import { FileJsonIcon, SettingsIcon, CpuIcon, ActivityIcon, BrainIcon, FolderIcon, BellIcon } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
-import { UpdateButton } from "./UpdateButton";
-import { ThemeToggle } from "./ui/theme-toggle";
 
 export function Layout() {
   const { t } = useTranslation();
