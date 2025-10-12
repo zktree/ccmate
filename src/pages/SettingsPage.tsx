@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,7 @@ import { FaXTwitter } from "react-icons/fa6";
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
+  const { theme, setTheme } = useTheme();
 
   const { data: updateInfo, isLoading: checkingUpdate } = useCheckForUpdates();
   const { mutate: installUpdate, isPending: installingUpdate } = useInstallAndRestart();
@@ -52,6 +54,20 @@ export function SettingsPage() {
               <SelectItem value="zh">中文</SelectItem>
               <SelectItem value="fr">Français</SelectItem>
               <SelectItem value="ja">日本語</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 mx-2">外观</label>
+          <Select value={theme || "system"} onValueChange={setTheme}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="选择外观" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="system">跟随系统</SelectItem>
+              <SelectItem value="light">浅色</SelectItem>
+              <SelectItem value="dark">深色</SelectItem>
             </SelectContent>
           </Select>
         </div>
