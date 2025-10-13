@@ -51,7 +51,7 @@ export function SettingsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="en">English</SelectItem>
-              <SelectItem value="zh">中文</SelectItem>
+              <SelectItem value="zh-CN">中文</SelectItem>
               <SelectItem value="fr">Français</SelectItem>
               <SelectItem value="ja">日本語</SelectItem>
             </SelectContent>
@@ -59,15 +59,15 @@ export function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 mx-2">外观</label>
+          <label className="block text-sm font-medium mb-2 mx-2">{t("settings.theme")}</label>
           <Select value={theme || "system"} onValueChange={setTheme}>
             <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="选择外观" />
+              <SelectValue placeholder={t("settings.theme")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="system">跟随系统</SelectItem>
-              <SelectItem value="light">浅色</SelectItem>
-              <SelectItem value="dark">深色</SelectItem>
+              <SelectItem value="system">{t("settings.theme.system")}</SelectItem>
+              <SelectItem value="light">{t("settings.theme.light")}</SelectItem>
+              <SelectItem value="dark">{t("settings.theme.dark")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
