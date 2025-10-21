@@ -2,7 +2,11 @@ import { useTheme } from "next-themes";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
 
 export function useCodeMirrorTheme() {
-  const { theme } = useTheme();
+  const { theme, systemTheme } = useTheme();
 
-  return theme === "dark" ? vscodeDark : vscodeLight;
+  // Determine the actual theme being applied
+  // If theme is "system", use the systemTheme value
+  const actualTheme = theme === "system" ? systemTheme : theme;
+
+  return actualTheme === "dark" ? vscodeDark : vscodeLight;
 }
