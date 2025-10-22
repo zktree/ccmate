@@ -34,6 +34,8 @@
   "configSwitcher.allConfigs": "Toutes les configurations",
   "configSwitcher.title": "Configurations",
   "configSwitcher.description": "Créer et basculer entre plusieurs configurations Claude Code",
+  "configSwitcher.originalConfig": "Claude",
+  "configSwitcher.originalConfigDescription": "Configuration d'origine de Claude Code",
   "configEditor.save": "Sauvegarder",
   "configEditor.configName": "Nom de la configuration",
   "configEditor.deleteConfirm": "Êtes-vous sûr de vouloir supprimer la configuration \"{{name}}\" ? Cette action ne peut pas être annulée.",

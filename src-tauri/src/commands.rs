@@ -566,6 +566,67 @@ pub async fn set_using_config(store_id: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn reset_to_original_config() -> Result<(), String> {
+    let home_dir = dirs::home_dir().ok_or("Could not find home directory")?;
+    let app_config_path = home_dir.join(APP_CONFIG_DIR);
+    let stores_file = app_config_path.join("stores.json");
+
+    // Set all stores to not using
+    if stores_file.exists() {
+        let content = std::fs::read_to_string(&stores_file)
+            .map_err(|e| format!("Failed to read stores file: {}", e))?;
+
+        let mut stores_data: StoresData = serde_json::from_str(&content)
+            .map_err(|e| format!("Failed to parse stores file: {}", e))?;
+
+        // Set all stores to not using
+        for store in &mut stores_data.configs {
+            store.using = false;
+        }
+
+        // Write back to stores file
+        let json_content = serde_json::to_string_pretty(&stores_data)
+            .map_err(|e| format!("Failed to serialize stores: {}", e))?;
+
+        std::fs::write(&stores_file, json_content)
+            .map_err(|e| format!("Failed to write stores file: {}", e))?;
+    }
+
+    // Clear env field in settings.json
+    let user_settings_path = home_dir.join(".claude/settings.json");
+
+    // Create .claude directory if it doesn't exist
+    if let Some(parent) = user_settings_path.parent() {
+        std::fs::create_dir_all(parent)
+            .map_err(|e| format!("Failed to create .claude directory: {}", e))?;
+    }
+
+    // Read existing settings if file exists, otherwise start with empty object
+    let mut existing_settings = if user_settings_path.exists() {
+        let content = std::fs::read_to_string(&user_settings_path)
+            .map_err(|e| format!("Failed to read existing settings: {}", e))?;
+        serde_json::from_str(&content)
+            .map_err(|e| format!("Failed to parse existing settings: {}", e))?
+    } else {
+        serde_json::Value::Object(serde_json::Map::new())
+    };
+
+    // Set env to empty object
+    if let Some(existing_obj) = existing_settings.as_object_mut() {
+        existing_obj.insert("env".to_string(), serde_json::json!({}));
+    }
+
+    // Write the merged settings back to file
+    let json_content = serde_json::to_string_pretty(&existing_settings)
+        .map_err(|e| format!("Failed to serialize merged settings: {}", e))?;
+
+    std::fs::write(&user_settings_path, json_content)
+        .map_err(|e| format!("Failed to write user settings: {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn get_current_store() -> Result<Option<ConfigStore>, String> {
     let stores = get_stores().await?;
     Ok(stores.into_iter().find(|store| store.using))

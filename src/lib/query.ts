@@ -196,6 +196,19 @@ export const useSetCurrentConfig = () => {
   });
 };
 
+export const useResetToOriginalConfig = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => invoke<void>("reset_to_original_config"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["stores"] });
+      queryClient.invalidateQueries({ queryKey: ["current-store"] });
+      queryClient.invalidateQueries({ queryKey: ["config-file", "user"] });
+    },
+  });
+};
+
 export const useUpdateConfig = () => {
   const queryClient = useQueryClient();
 

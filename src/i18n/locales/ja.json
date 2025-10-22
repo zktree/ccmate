@@ -34,6 +34,8 @@
   "configSwitcher.allConfigs": "すべての設定",
   "configSwitcher.title": "設定",
   "configSwitcher.description": "複数の Claude Code 設定を作成して切り替え",
+  "configSwitcher.originalConfig": "Claude",
+  "configSwitcher.originalConfigDescription": "Claude Code の元の設定",
   "configEditor.save": "保存",
   "configEditor.configName": "設定名",
   "configEditor.deleteConfirm": "設定 \"{{name}}\" を削除してもよろしいですか？この操作は元に戻せません。",

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useStores, useSetCurrentConfig, useCreateConfig } from "../lib/query";
+import { useStores, useSetCurrentConfig, useCreateConfig, useResetToOriginalConfig } from "../lib/query";
 import { cn } from "@/lib/utils";
 import { EllipsisVerticalIcon, PencilLineIcon, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -28,10 +28,20 @@ function ConfigStores() {
   const { t } = useTranslation();
   const { data: stores } = useStores();
   const setCurrentStoreMutation = useSetCurrentConfig();
+  const resetToOriginalMutation = useResetToOriginalConfig();
   const navigate = useNavigate();
+  
+  const isOriginalConfigActive = !stores.some(store => store.using);
+  
   const handleStoreClick = (storeId: string, isCurrentStore: boolean) => {
     if (!isCurrentStore) {
       setCurrentStoreMutation.mutate(storeId);
+    }
+  };
+
+  const handleOriginalConfigClick = () => {
+    if (!isOriginalConfigActive) {
+      resetToOriginalMutation.mutate();
     }
   };
 
@@ -111,6 +121,22 @@ function ConfigStores() {
       {/* <GLMBanner className="mx-4 mt-4" /> */}
 
       <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 p-4">
+        {/* Fixed Claude Original Config Item */}
+        <div
+          role="button"
+          onClick={handleOriginalConfigClick}
+          className={cn("border rounded-xl p-3 h-[100px] flex flex-col justify-between transition-colors", {
+            "bg-primary/10 border-primary border-2": isOriginalConfigActive,
+          })}
+        >
+          <div>
+            <div>{t("configSwitcher.originalConfig")}</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {t("configSwitcher.originalConfigDescription")}
+            </div>
+          </div>
+        </div>
+
         {stores.map((store) => {
           const isCurrentStore = store.using
           return (

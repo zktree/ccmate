@@ -177,6 +177,7 @@ pub fn run() {
             update_config,
             delete_config,
             set_using_config,
+            reset_to_original_config,
             get_current_store,
             open_config_path,
             get_global_mcp_servers,
