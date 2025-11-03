@@ -131,9 +131,6 @@ export function Layout() {
 						</ul>
 
 						<div className="space-y-2">
-							<div className="text-xs text-muted-foreground p-4">
-								CC Mate v{getVersion()}
-							</div>
 							<UpdateButton />
 						</div>
 					</div>
