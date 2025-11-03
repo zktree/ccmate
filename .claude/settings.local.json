@@ -14,7 +14,8 @@
       "Bash(pnpm exec biome check:*)",
       "Bash(pnpm install:*)",
       "Bash(pnpm search:*)",
-      "Bash(gh release list:*)"
+      "Bash(gh release list:*)",
+      "Bash(gh workflow run:*)"
     ],
     "deny": [],
     "ask": []
