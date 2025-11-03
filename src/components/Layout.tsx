@@ -15,7 +15,6 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { cn, isMacOS } from "../lib/utils";
 import { UpdateButton } from "./UpdateButton";
 import { ScrollArea } from "./ui/scroll-area";
-import { getVersion } from "@tauri-apps/api/app";
 
 export function Layout() {
 	const { t } = useTranslation();
