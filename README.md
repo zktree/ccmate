@@ -1,22 +1,120 @@
 # CC Mate - Configure your Claude Code without pain
 
-Download: https://randynamic.org/ccmate
+<div align="center">
 
-<img width="1944" height="1544" alt="FePI6i1a@2x" src="https://github.com/user-attachments/assets/a0222a76-2ba0-4fdb-89bc-7f0d49efed5a" />
+**A modern desktop application for managing Claude Code configuration files**
 
-<img width="1944" height="1544" alt="2qBl4im7@2x" src="https://github.com/user-attachments/assets/fa4f34f3-d1eb-4dc8-b7c3-3e703613c42a" />
+[Download Latest Release](https://randynamic.org/ccmate) • [Report Issues](https://github.com/djyde/ccconfig/issues) • [Contributing Guide](CONTRIBUTING.md)
 
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-## Features
+</div>
 
-- Switch multiple Claude Code config
-- Manage MCP servers
-- Manage Claude Code agents
-- Manage global commands
-- Read/Write global CLAUDE.md memory file
-- Notification
-- Usage analytics
+## 📸 Screenshots
 
-# License
+### Configuration Management
+<img width="1944" height="1544" alt="CC Mate Configuration Interface" src="https://github.com/user-attachments/assets/a0222a76-2ba0-4fdb-89bc-7f0d49efed5a" />
 
-AGPL v3
+### Usage Analytics
+<img width="1944" height="1544" alt="CC Mate Analytics Dashboard" src="https://github.com/user-attachments/assets/fa4f34f3-d1eb-4dc8-b7c3-3e703613c42a" />
+
+## ✨ Features
+
+- **🔄 Multi-Configuration Support** - Switch between multiple Claude Code configurations effortlessly
+- **⚙️ MCP Server Management** - Configure and manage Model Context Protocol (MCP) servers
+- **🤖 Agent Management** - Manage Claude Code agents and their settings
+- **📋 Global Commands** - Configure and organize global commands
+- **📝 CLAUDE.md Integration** - Read and write global CLAUDE.md memory files
+- **🔔 Notifications** -
+- **📊 Usage Analytics** - Track and analyze your Claude Code usage
+
+## 🚀 Quick Start
+
+### Download & Install
+
+1. **Download the latest release** from [randynamic.org/ccmate](https://randynamic.org/ccmate)
+2. **Install the application** for your platform:
+   - **macOS**: Download the `.dmg` file and drag to Applications
+   - **Windows**: Download the `.exe` installer and run it
+   - **Linux**: Download the `.AppImage` or `.deb` package
+3. **Launch CC Mate** from your applications folder
+
+### First Run
+
+On first launch, CC Mate automatically:
+- Creates backups of existing Claude configurations in `~/.ccconfig/claude_backup/`
+- Detects and loads available configuration files
+- Sets up the default workspace
+
+## 📁 Configuration Files
+
+CC Mate manages several types of configuration files:
+
+### User Configuration
+- Location: `~/.claude/settings.json`
+- Purpose: Personal Claude Code settings and preferences
+
+### Enterprise Configuration
+- Location: Varies by platform
+- Purpose: Organization-wide managed settings
+- Access: Read-only for security
+
+### MCP Configuration
+- Location: Varies by platform
+- Purpose: Model Context Protocol server settings
+- Access: Full management capabilities
+
+## 🏗️ Architecture
+
+Built with modern technologies:
+
+- **Frontend**: React 19 with TypeScript, Tailwind CSS, and shadcn/ui
+- **Backend**: Rust with Tauri v2 for secure cross-platform desktop apps
+- **Editor**: CodeMirror for syntax-highlighted code editing
+- **State Management**: React Query for data fetching and caching
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Setting up the development environment
+- Building and testing the application
+- Code style and guidelines
+- Submitting pull requests
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Application won't start**
+- Check if you have the latest version installed
+- Verify system requirements are met
+- Try running from terminal to see error messages
+
+**Configurations not loading**
+- Ensure Claude Code is installed and has been run at least once
+- Check file permissions in `~/.claude/` directory
+- Verify backup files weren't corrupted
+
+### Getting Help
+
+- 📖 [Documentation](https://github.com/djyde/ccconfig/wiki)
+- 🐛 [Report Issues](https://github.com/djyde/ccconfig/issues)
+- 💬 [Discussions](https://github.com/djyde/ccconfig/discussions)
+- 📋 [Contributing Guide](CONTRIBUTING.md)
+
+## 📄 License
+
+This project is licensed under the **GNU Affero General Public License v3.0**.
+
+See the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the community**
+
+[⭐ Star this repo](https://github.com/djyde/ccconfig) • [🐦 Follow updates](https://github.com/djyde/ccconfig/releases)
+
+</div>
