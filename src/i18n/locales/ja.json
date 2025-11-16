@@ -246,5 +246,22 @@
 	"kimi.apiKeyPlaceholder": "Kimi API キーを入力",
 	"kimi.creating": "作成中...",
 	"kimi.createConfig": "設定を作成",
-	"kimi.useKimi": "Kimi を使用"
+	"kimi.useKimi": "Kimi を使用",
+	"usage.days": "日間",
+	"usage.noActivity": "アクティビティなし",
+	"usage.requests": "リクエスト",
+	"usage.tokens": "トークン",
+	"usage.totalTokens": "合計トークン",
+	"usage.view.chart": "チャート表示",
+	"usage.view.grid": "グリッド表示",
+	"usage.activityGrid.title": "アクティビティグリッド",
+	"usage.activityGrid.description": "過去1年間の毎日のトークン使用量",
+	"usage.activityGrid.description3Months": "過去3ヶ月間の毎日のトークン使用量",
+	"usage.activityGrid.description6Months": "過去6ヶ月間の毎日のトークン使用量",
+	"usage.activityGrid.descriptionThisYear": "今年の毎日のトークン使用量",
+	"usage.activityGrid.3Months": "3ヶ月",
+	"usage.activityGrid.6Months": "6ヶ月",
+	"usage.activityGrid.thisYear": "今年",
+	"usage.activityGrid.less": "少ない",
+	"usage.activityGrid.more": "多い"
 }

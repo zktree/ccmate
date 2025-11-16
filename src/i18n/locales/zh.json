@@ -246,5 +246,22 @@
 	"usageChart.startOfMonth": "本月开始",
 	"usageChart.startOfToday": "今天开始",
 	"usageChart.startOfWeek": "本周开始",
-	"usageChart.timeRange": "时间范围："
+	"usageChart.timeRange": "时间范围：",
+	"usage.days": "天",
+	"usage.noActivity": "无活动",
+	"usage.requests": "请求",
+	"usage.tokens": "令牌",
+	"usage.totalTokens": "总令牌",
+	"usage.view.chart": "图表视图",
+	"usage.view.grid": "网格视图",
+	"usage.activityGrid.title": "活动网格",
+	"usage.activityGrid.description": "过去一年的每日令牌使用情况",
+	"usage.activityGrid.description3Months": "过去3个月的每日令牌使用情况",
+	"usage.activityGrid.description6Months": "过去6个月的每日令牌使用情况",
+	"usage.activityGrid.descriptionThisYear": "今年的每日令牌使用情况",
+	"usage.activityGrid.3Months": "3个月",
+	"usage.activityGrid.6Months": "6个月",
+	"usage.activityGrid.thisYear": "今年",
+	"usage.activityGrid.less": "较少",
+	"usage.activityGrid.more": "较多"
 }

@@ -246,5 +246,22 @@
 	"kimi.apiKeyPlaceholder": "Entrez votre clé API Kimi",
 	"kimi.creating": "Création...",
 	"kimi.createConfig": "Créer la configuration",
-	"kimi.useKimi": "Utiliser Kimi"
+	"kimi.useKimi": "Utiliser Kimi",
+	"usage.days": "jours",
+	"usage.noActivity": "Aucune activité",
+	"usage.requests": "requêtes",
+	"usage.tokens": "jetons",
+	"usage.totalTokens": "jetons au total",
+	"usage.view.chart": "Vue graphique",
+	"usage.view.grid": "Vue grille",
+	"usage.activityGrid.title": "Grille d'activité",
+	"usage.activityGrid.description": "Utilisation quotidienne des jetons au cours de l'année écoulée",
+	"usage.activityGrid.description3Months": "Utilisation quotidienne des jetons au cours des 3 derniers mois",
+	"usage.activityGrid.description6Months": "Utilisation quotidienne des jetons au cours des 6 derniers mois",
+	"usage.activityGrid.descriptionThisYear": "Utilisation quotidienne des jetons cette année",
+	"usage.activityGrid.3Months": "3 mois",
+	"usage.activityGrid.6Months": "6 mois",
+	"usage.activityGrid.thisYear": "Cette année",
+	"usage.activityGrid.less": "Moins",
+	"usage.activityGrid.more": "Plus"
 }

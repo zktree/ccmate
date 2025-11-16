@@ -18,7 +18,14 @@
       "Bash(gh workflow run:*)",
       "Skill(web-fetch)",
       "Bash(gh workflow list:*)",
-      "Bash(gh release view:*)"
+      "Bash(gh release view:*)",
+      "mcp__shadcn__view_items_in_registries",
+      "Bash(pnpm remove:*)",
+      "Bash(for:*)",
+      "Bash(do echo:*)",
+      "Bash(jq:*)",
+      "Bash(done)",
+      "Bash(pnpm exec biome format:*)"
     ],
     "deny": [],
     "ask": []

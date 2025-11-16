@@ -1,11 +1,4 @@
-import {
-	format,
-	startOfDay,
-	startOfMonth,
-	startOfWeek,
-	subDays,
-	subHours,
-} from "date-fns";
+import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AreaChart } from "@/components/ui/area-chart";
@@ -59,44 +52,44 @@ export function TokenUsageChart({
 		}
 
 		// Filter by time range
-		const now = new Date();
-		let startTime: Date;
+		const now = dayjs();
+		let startTime: dayjs.Dayjs;
 
 		switch (timeRange) {
 			case "5h":
-				startTime = subHours(now, 5);
+				startTime = now.subtract(5, 'hour');
 				break;
 			case "today":
-				startTime = startOfDay(now);
+				startTime = now.startOf('day');
 				break;
 			case "7d":
-				startTime = subDays(now, 6);
+				startTime = now.subtract(6, 'day');
 				break;
 			case "week":
-				startTime = startOfWeek(now);
+				startTime = now.day(0); // Sunday (start of week)
 				break;
 			case "month":
-				startTime = startOfMonth(now);
+				startTime = now.startOf('month');
 				break;
 			case "all":
 				// For "all time", find the earliest timestamp in the data
 				if (filtered.length > 0) {
-					const earliestTime = new Date(
+					const earliestTime = dayjs(
 						Math.min(
-							...filtered.map((record) => new Date(record.timestamp).getTime()),
+							...filtered.map((record) => dayjs(record.timestamp).valueOf()),
 						),
 					);
 					startTime = earliestTime;
 				} else {
-					startTime = new Date(0);
+					startTime = dayjs(0);
 				}
 				break;
 			default:
-				startTime = subHours(now, 5);
+				startTime = now.subtract(5, 'hour');
 		}
 
 		filtered = filtered.filter(
-			(record) => new Date(record.timestamp) >= startTime,
+			(record) => dayjs(record.timestamp).isAfter(startTime.subtract(1, 'millisecond')),
 		);
 
 		return filtered;
@@ -131,43 +124,41 @@ export function TokenUsageChart({
 		const intervals: {
 			[key: string]: { input: number; output: number; cache: number };
 		} = {};
-		const now = new Date();
+		const now = dayjs();
 
 		if (timeRange === "all") {
 			// For all time, group by week
 			const earliestTime =
 				records.length > 0
-					? new Date(
+					? dayjs(
 							Math.min(
 								...records.map((record) =>
-									new Date(record.timestamp).getTime(),
+									dayjs(record.timestamp).valueOf(),
 								),
 							),
 						)
-					: new Date();
+					: dayjs();
 
 			// Get start of the week for earliest time
-			let currentWeekStart = startOfWeek(earliestTime);
-			const nowWeekStart = startOfWeek(now);
+			let currentWeekStart = earliestTime.day(0); // Sunday
+			const nowWeekStart = now.day(0); // Sunday
 
 			// Generate weekly intervals from earliest week to current week
-			while (currentWeekStart <= nowWeekStart) {
-				intervals[currentWeekStart.getTime()] = {
+			while (currentWeekStart.isBefore(nowWeekStart) || currentWeekStart.isSame(nowWeekStart)) {
+				intervals[currentWeekStart.valueOf()] = {
 					input: 0,
 					output: 0,
 					cache: 0,
 				};
 				// Move to next week (7 days)
-				currentWeekStart = new Date(
-					currentWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000,
-				);
+				currentWeekStart = currentWeekStart.add(1, 'week');
 			}
 
 			// Group records into weekly intervals
 			records.forEach((record) => {
-				const recordTime = new Date(record.timestamp);
-				const weekStart = startOfWeek(recordTime);
-				const weekKey = weekStart.getTime();
+				const recordTime = dayjs(record.timestamp);
+				const weekStart = recordTime.day(0); // Sunday
+				const weekKey = weekStart.valueOf();
 
 				if (intervals[weekKey]) {
 					intervals[weekKey].input += record.usage?.input_tokens || 0;
@@ -182,7 +173,7 @@ export function TokenUsageChart({
 
 			// Round current time down to nearest 30-minute boundary (epoch-based)
 			const currentIntervalKey =
-				Math.floor(now.getTime() / intervalMs) * intervalMs;
+				Math.floor(now.valueOf() / intervalMs) * intervalMs;
 
 			// Generate intervals (10 intervals for 5 hours)
 			for (let i = 0; i < 10; i++) {
@@ -192,9 +183,9 @@ export function TokenUsageChart({
 
 			// Group records into 30-minute intervals
 			records.forEach((record) => {
-				const recordTime = new Date(record.timestamp);
+				const recordTime = dayjs(record.timestamp);
 				const recordIntervalKey =
-					Math.floor(recordTime.getTime() / intervalMs) * intervalMs;
+					Math.floor(recordTime.valueOf() / intervalMs) * intervalMs;
 
 				if (intervals[recordIntervalKey]) {
 					intervals[recordIntervalKey].input += record.usage?.input_tokens || 0;
@@ -206,19 +197,18 @@ export function TokenUsageChart({
 			});
 		} else if (timeRange === "today") {
 			// Group by hour for today
-			const startOfToday = startOfDay(now);
-			const currentHour = now.getHours();
+			const startOfToday = now.startOf('day');
+			const currentHour = now.hour();
 
 			for (let i = 0; i <= currentHour; i++) {
-				const hourTime = new Date(startOfToday.getTime() + i * 60 * 60 * 1000);
-				intervals[hourTime.getTime()] = { input: 0, output: 0, cache: 0 };
+				const hourTime = startOfToday.add(i, 'hour');
+				intervals[hourTime.valueOf()] = { input: 0, output: 0, cache: 0 };
 			}
 
 			records.forEach((record) => {
-				const recordTime = new Date(record.timestamp);
-				const hourStart = new Date(recordTime);
-				hourStart.setMinutes(0, 0, 0);
-				const hourKey = hourStart.getTime();
+				const recordTime = dayjs(record.timestamp);
+				const hourStart = recordTime.startOf('hour');
+				const hourKey = hourStart.valueOf();
 
 				if (intervals[hourKey]) {
 					intervals[hourKey].input += record.usage?.input_tokens || 0;
@@ -229,45 +219,34 @@ export function TokenUsageChart({
 			});
 		} else {
 			// Group by day for longer periods (7d, week, month)
-			let startDate: Date;
+			let startDate: dayjs.Dayjs;
 			let days: number;
 
 			if (timeRange === "week") {
-				startDate = startOfWeek(now);
+				startDate = now.day(0); // Sunday
 				// Calculate actual days in the current week so far (from start of week to today)
-				const todayStart = startOfDay(now);
-				days =
-					Math.floor(
-						(todayStart.getTime() - startDate.getTime()) /
-							(24 * 60 * 60 * 1000),
-					) + 1;
+				const todayStart = now.startOf('day');
+				days = todayStart.diff(startDate, 'day') + 1;
 			} else if (timeRange === "month") {
-				startDate = startOfMonth(now);
+				startDate = now.startOf('month');
 				// Calculate actual days in the current month so far (from start of month to today)
-				const todayStart = startOfDay(now);
-				days =
-					Math.floor(
-						(todayStart.getTime() - startDate.getTime()) /
-							(24 * 60 * 60 * 1000),
-					) + 1;
+				const todayStart = now.startOf('day');
+				days = todayStart.diff(startDate, 'day') + 1;
 			} else {
 				// For 7d, start from (days-1) days ago to include today
 				days = 7;
-				startDate = startOfDay(subDays(now, days - 1));
+				startDate = now.subtract(days - 1, 'day').startOf('day');
 			}
 
 			for (let i = 0; i < days; i++) {
-				const dayTime = startOfDay(
-					new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000),
-				);
-				intervals[dayTime.getTime()] = { input: 0, output: 0, cache: 0 };
+				const dayTime = startDate.add(i, 'day');
+				intervals[dayTime.valueOf()] = { input: 0, output: 0, cache: 0 };
 			}
 
 			records.forEach((record) => {
-				const recordTime = new Date(record.timestamp);
-				const dayStart = new Date(recordTime);
-				dayStart.setHours(0, 0, 0, 0);
-				const dayKey = dayStart.getTime();
+				const recordTime = dayjs(record.timestamp);
+				const dayStart = recordTime.startOf('day');
+				const dayKey = dayStart.valueOf();
 
 				if (intervals[dayKey]) {
 					intervals[dayKey].input += record.usage?.input_tokens || 0;
@@ -287,16 +266,16 @@ export function TokenUsageChart({
 		.map(Number)
 		.sort((a, b) => a - b)
 		.map((timestamp) => {
-			const date = new Date(timestamp);
+			const date = dayjs(timestamp);
 			let label: string;
 			if (timeRange === "all") {
-				label = format(date, "MMM dd, yyyy");
+				label = date.format("MMM DD, YYYY");
 			} else if (timeRange === "today") {
-				label = format(date, "HH:mm");
+				label = date.format("HH:mm");
 			} else if (timeRange === "5h") {
-				label = format(date, "HH:mm");
+				label = date.format("HH:mm");
 			} else {
-				label = format(date, "MMM dd");
+				label = date.format("MMM DD");
 			}
 
 			return {

@@ -6,8 +6,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ActivityGrid } from "@/components/ActivityGrid";
 import { TokenUsageChart } from "@/components/TokenUsageChart";
 import { Button } from "@/components/ui/button";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { type ProjectUsageRecord, useProjectUsageFiles } from "@/lib/query";
 import { cn, formatLargeNumber } from "@/lib/utils";
 
@@ -32,45 +34,63 @@ export function UsagePage() {
 	}, [usageData]);
 
 	return (
-		<div className="">
+		<TooltipProvider>
 			<div
-				className="flex items-center p-3 border-b px-3 justify-between sticky top-0 bg-background z-10 mb-4"
+				className="flex flex-col p-3 border-b px-3 sticky top-0 bg-background z-10 mb-4"
 				data-tauri-drag-region
 			>
-				<div data-tauri-drag-region>
-					<h3 className="font-bold" data-tauri-drag-region>
-						{t("usage.title")}
-					</h3>
-					<p className="text-sm text-muted-foreground" data-tauri-drag-region>
-						{t("usage.description")}
-					</p>
-				</div>
+				<div
+					className="flex items-center justify-between"
+					data-tauri-drag-region
+				>
+					<div data-tauri-drag-region>
+						<h3 className="font-bold" data-tauri-drag-region>
+							{t("usage.title")}
+						</h3>
+						<p className="text-sm text-muted-foreground" data-tauri-drag-region>
+							{t("usage.description")}
+						</p>
+					</div>
 
-				<div>
-					<Button
-						disabled={isRefetching || isLoading}
-						onClick={(_) => {
-							refetch();
-						}}
-						variant="ghost"
-						size="sm"
-						className="text-muted-foreground"
-					>
-						<RefreshCwIcon
-							className={cn({
-								"animate-spin": isRefetching || isLoading,
-							})}
-						/>
-						{isRefetching || isLoading
-							? t("usage.refreshing")
-							: t("usage.refresh")}
-					</Button>
+					<div className="flex items-center gap-2">
+						<Button
+							disabled={isRefetching || isLoading}
+							onClick={(_) => {
+								refetch();
+							}}
+							variant="ghost"
+							size="sm"
+							className="text-muted-foreground h-8 px-3"
+						>
+							<RefreshCwIcon
+								className={cn({
+									"animate-spin": isRefetching || isLoading,
+								})}
+							/>
+							{isRefetching || isLoading
+								? t("usage.refreshing")
+								: t("usage.refresh")}
+						</Button>
+					</div>
 				</div>
 			</div>
 			<div className="px-4 space-y-4">
 				{isLoading ? (
 					<div className="space-y-6">
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div className="p-1 border rounded-lg pb-5">
+							<div className="space-y-4">
+								{[1, 2, 3].map((i) => (
+									<div
+										key={i}
+										className="bg-card p-4 rounded-lg space-y-2 border"
+									>
+										<div className="h-4  rounded animate-pulse"></div>
+										<div className="h-8 rounded animate-pulse"></div>
+									</div>
+								))}
+							</div>
+						</div>
+						<div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
 							{[1, 2, 3].map((i) => (
 								<div
 									key={i}
@@ -89,6 +109,9 @@ export function UsagePage() {
 					<p>{t("usage.error", { error: error.message })}</p>
 				) : usageData && usageData.length > 0 ? (
 					<>
+						<div className=" rounded-lg pb-5">
+							<ActivityGrid data={usageData} />
+						</div>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 							<div className="bg-blue-50 border-blue-100 text-blue-700 border-2 p-4 rounded-lg space-y-2 dark:bg-blue-950/20 dark:border-blue-900/30 dark:text-blue-300">
 								<div className="flex items-center gap-2">
@@ -146,8 +169,7 @@ export function UsagePage() {
                 </p>
               </div> */}
 						</div>
-
-						<div className=" bg-card p-6 rounded-lg w-full min-w-0 border">
+						<div className="mt-6 bg-card p-6 rounded-lg w-full min-w-0 border">
 							<TokenUsageChart
 								data={usageData}
 								onFilteredDataChange={setFilteredUsageData}
@@ -158,6 +180,6 @@ export function UsagePage() {
 					<p>{t("usage.noData")}</p>
 				)}
 			</div>
-		</div>
+		</TooltipProvider>
 	);
 }
