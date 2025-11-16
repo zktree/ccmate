@@ -1,7 +1,22 @@
-# Tauri + React + Typescript
+# CC Mate - Configure your Claude Code without pain
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Download: https://randynamic.org/ccmate
 
-## Recommended IDE Setup
+<img width="1944" height="1544" alt="FePI6i1a@2x" src="https://github.com/user-attachments/assets/a0222a76-2ba0-4fdb-89bc-7f0d49efed5a" />
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+<img width="1944" height="1544" alt="2qBl4im7@2x" src="https://github.com/user-attachments/assets/fa4f34f3-d1eb-4dc8-b7c3-3e703613c42a" />
+
+
+## Features
+
+- Switch multiple Claude Code config
+- Manage MCP servers
+- Manage Claude Code agents
+- Manage global commands
+- Read/Write global CLAUDE.md memory file
+- Notification
+- Usage analytics
+
+# License
+
+AGPL v3
