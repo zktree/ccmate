@@ -1,6 +1,6 @@
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { yamlFrontmatter } from "@codemirror/lang-yaml";
-import { ask, message } from "@tauri-apps/plugin-dialog";
+import { ask, message } from "@/lib/utools-dialog";
 import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { BotIcon, PlusIcon, SaveIcon, TrashIcon } from "lucide-react";
 import { Suspense, useState } from "react";

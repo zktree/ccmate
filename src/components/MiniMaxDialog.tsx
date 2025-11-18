@@ -1,4 +1,4 @@
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openUrl } from "@/lib/utools-dialog";
 import { ExternalLinkIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

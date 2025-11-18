@@ -1,6 +1,6 @@
 import { json } from "@codemirror/lang-json";
-import { ask, message } from "@tauri-apps/plugin-dialog";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { ask, message } from "@/lib/utools-dialog";
+import { openUrl } from "@/lib/utools-dialog";
 import CodeMirror from "@uiw/react-codemirror";
 import {
 	ExternalLinkIcon,

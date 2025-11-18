@@ -1,49 +1,16 @@
+import { InfoIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import {
-	useNotificationSettings,
-	useUpdateNotificationSettings,
-} from "@/lib/query";
+import { useNotificationSettings } from "@/lib/query";
 
 export function NotificationPage() {
 	const { t } = useTranslation();
-	const { data: notificationSettings, isLoading } = useNotificationSettings();
-	const updateNotificationSettings = useUpdateNotificationSettings();
+	const { isLoading } = useNotificationSettings();
 
-	const handleGeneralToggle = (checked: boolean) => {
-		if (!notificationSettings) return;
-
-		const newSettings = {
-			enable: checked,
-			enabled_hooks: checked ? notificationSettings.enabled_hooks : [],
-		};
-		updateNotificationSettings.mutate(newSettings);
-	};
-
-	const handleHookToggle = (hookName: string, checked: boolean) => {
-		if (!notificationSettings) return;
-
-		let newHooks: string[];
-		if (checked) {
-			newHooks = [...notificationSettings.enabled_hooks, hookName];
-		} else {
-			newHooks = notificationSettings.enabled_hooks.filter(
-				(hook) => hook !== hookName,
-			);
-		}
-
-		const newSettings = {
-			enable: notificationSettings.enable,
-			enabled_hooks: newHooks,
-		};
-		updateNotificationSettings.mutate(newSettings);
-	};
-
-	const isHookEnabled = (hookName: string) => {
-		return notificationSettings?.enabled_hooks.includes(hookName) || false;
-	};
+	// 功能开发中 - 相关处理函数已移除，将来需要时可从 git 历史恢复
 
 	if (isLoading) {
 		return (
@@ -88,17 +55,28 @@ export function NotificationPage() {
 		<div className="">
 			<div
 				className="flex items-center p-3 border-b px-3 justify-between sticky top-0 bg-background z-10 mb-4"
-				data-tauri-drag-region
 			>
-				<div data-tauri-drag-region>
-					<h3 className="font-bold" data-tauri-drag-region>
+				<div>
+					<h3 className="font-bold">
 						{t("notifications.title")}
 					</h3>
-					<p className="text-sm text-muted-foreground" data-tauri-drag-region>
+					<p className="text-sm text-muted-foreground">
 						{t("notifications.description")}
 					</p>
 				</div>
 			</div>
+
+			{/* 功能开发中提示 */}
+			<div className="px-4 mb-4">
+				<Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+					<InfoIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+					<AlertTitle className="text-blue-800 dark:text-blue-300">功能开发中</AlertTitle>
+					<AlertDescription className="text-blue-700 dark:text-blue-400">
+						Hook 通知功能正在开发中，将在未来版本中推出。当前您可以查看配置，但无法启用该功能。
+					</AlertDescription>
+				</Alert>
+			</div>
+
 			<div className="px-4 flex flex-col bg-card mx-4 rounded-lg py-1 border">
 				<div className="border-b px-1 py-3">
 					<div className="flex items-center justify-between">
@@ -107,8 +85,8 @@ export function NotificationPage() {
 						</Label>
 						<Switch
 							id="notification"
-							checked={notificationSettings?.enable || false}
-							onCheckedChange={handleGeneralToggle}
+							checked={false}
+							disabled={true}
 						/>
 					</div>
 					<div className="text-muted-foreground text-sm">
@@ -122,11 +100,8 @@ export function NotificationPage() {
 						</Label>
 						<Switch
 							id="preToolUse"
-							checked={isHookEnabled("PreToolUse")}
-							onCheckedChange={(checked) =>
-								handleHookToggle("PreToolUse", checked)
-							}
-							disabled={!notificationSettings?.enable}
+							checked={false}
+							disabled={true}
 						/>
 					</div>
 					<div className="text-muted-foreground text-sm">
@@ -140,9 +115,8 @@ export function NotificationPage() {
 						</Label>
 						<Switch
 							id="stop"
-							checked={isHookEnabled("Stop")}
-							onCheckedChange={(checked) => handleHookToggle("Stop", checked)}
-							disabled={!notificationSettings?.enable}
+							checked={false}
+							disabled={true}
 						/>
 					</div>
 					<div className="text-muted-foreground text-sm">

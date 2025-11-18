@@ -1,45 +1,43 @@
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// @ts-expect-error process is a nodejs global
-const host = process.env.TAURI_DEV_HOST;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
 	plugins: [
 		react({
 			babel: {
 				plugins: ["babel-plugin-react-compiler"],
 			},
 		}),
-		tailwindcss(),
 	],
 	resolve: {
 		alias: {
-			"@": "/src",
+			"@": path.resolve(__dirname, "./src"),
 		},
+	},
+	css: {
+		postcss: "./postcss.config.js",
 	},
 
-	// Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-	//
-	// 1. prevent Vite from obscuring rust errors
-	clearScreen: false,
-	// 2. tauri expects a fixed port, fail if that port is not available
+	// utools 插件开发配置
+	base: "./",
 	server: {
-		port: 1420,
-		strictPort: true,
-		host: host || false,
-		hmr: host
-			? {
-					protocol: "ws",
-					host,
-					port: 1421,
-				}
-			: undefined,
-		watch: {
-			// 3. tell Vite to ignore watching `src-tauri`
-			ignored: ["**/src-tauri/**"],
+		port: 5173,
+		host: "0.0.0.0",
+	},
+	build: {
+		outDir: "dist",
+		assetsDir: "assets",
+		rollupOptions: {
+			input: {
+				main: path.resolve(__dirname, "index.html"),
+			},
 		},
 	},
-}));
+	publicDir: "public",
+});

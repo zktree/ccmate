@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ThemeProvider } from "./components/theme-provider";
+import { UtoolsLifecycle } from "./components/UtoolsLifecycle";
 import { Toaster } from "./components/ui/sonner";
 import { Router } from "./router";
 import "./i18n";
@@ -29,7 +30,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 					enableSystem
 					disableTransitionOnChange
 				>
-					<Router />
+					<UtoolsLifecycle>
+						<Router />
+					</UtoolsLifecycle>
 					<Toaster />
 				</ThemeProvider>
 			</QueryClientProvider>

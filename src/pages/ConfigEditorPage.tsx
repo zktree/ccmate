@@ -1,5 +1,5 @@
 import { Kimi, ZAI } from "@lobehub/icons";
-import { ask } from "@tauri-apps/plugin-dialog";
+import { ask } from "@/lib/utools-dialog";
 import { get, isEmpty, isPlainObject, set, transform } from "lodash-es";
 import { ChevronLeftIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

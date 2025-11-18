@@ -4,18 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Tauri v2 application for managing Claude Code configuration files. It provides a UI to view, edit, and backup various Claude Code configuration files across different locations (user, enterprise).
+CC Mate is a utools plugin for managing Claude Code configuration files. It provides a UI to view, edit, and backup various Claude Code configuration files, manage MCP servers, track usage statistics, and edit memory files.
+
+**Core Features:**
+- Multi-configuration management and switching
+- MCP (Model Context Protocol) server management
+- Claude Code Agents and Commands management
+- CLAUDE.md memory file editing
+- Usage statistics analysis with charts
+- Cross-platform support (macOS, Windows, Linux)
 
 ## Tech Stack
 
 - **Frontend**: React 19 with TypeScript
-- **Backend**: Rust with Tauri v2
-- **Build Tool**: Vite with React plugin
-- **Styling**: Tailwind CSS v4 via @tailwindcss/vite
-- **UI Components**: shadcn/ui components
-- **Data Fetching**: @tanstack/react-query
-- **Forms**: react-hook-form with @hookform/resolvers and zod
-- **Routing**: react-router-dom
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS v3 with PostCSS
+- **UI Components**: shadcn/ui components (Radix UI based)
+- **Data Fetching**: @tanstack/react-query v5
+- **Forms**: react-hook-form with zod validation
+- **Routing**: react-router-dom v7
+- **Code Editor**: CodeMirror 4
+- **Charts**: recharts, @tremor/react
+- **i18n**: i18next (en, zh, ja, fr)
 - **Package Manager**: pnpm (required)
 
 ## Development Commands
@@ -25,60 +35,119 @@ This is a Tauri v2 application for managing Claude Code configuration files. It 
 pnpm install
 
 # Start development server
-pnpm tauri dev
+pnpm dev
 
 # Build for production
 pnpm build
 
-# Preview built app
-pnpm preview
+# Build and pack utools plugin
+pnpm build:utools
 
-# Check TypeScript lint error
+# Pack utools plugin only (after build)
+pnpm pack
 
+# Check TypeScript errors
 pnpm tsc --noEmit
 ```
 
 ## Architecture
 
 ### Frontend Structure
-- `src/main.tsx` - App entry point with React Query client setup
-- `src/lib/query.ts` - React Query hooks and API functions
-- `src/lib/utils.ts` - Utility functions
-- `src/components/ui/` - shadcn/ui components
+```
+src/
+├── main.tsx              # App entry with QueryClient, theme, i18n setup
+├── router.tsx            # React Router route definitions
+├── tw.css                # Tailwind CSS global styles
+├── components/
+│   ├── Layout.tsx        # Main layout (sidebar + content)
+│   ├── UtoolsLifecycle.tsx  # utools plugin lifecycle management
+│   └── ui/               # shadcn/ui components
+├── pages/                # Page components
+├── lib/
+│   ├── query.ts          # React Query hooks and API calls
+│   ├── utools-adapter.ts # Bridge from Tauri invoke to window.services
+│   ├── utools-dialog.ts  # Dialog and URL opener utilities
+│   └── utils.ts          # Utility functions
+└── i18n/locales/         # Translation files (en, zh, ja, fr)
+```
 
-### Backend Structure (Rust)
-- `src-tauri/src/main.rs` - Tauri application entry point
-- `src-tauri/src/lib.rs` - Main application setup and plugin configuration
-- `src-tauri/src/commands.rs` - Tauri commands for file operations
+### Backend Structure (Node.js Preload)
+```
+public/
+├── plugin.json           # utools plugin manifest
+├── preload/
+│   ├── services.js       # Node.js services exposed via window.services
+│   └── package.json      # CommonJS declaration for preload
+└── logo.png              # Plugin icon
+```
 
 ### Key Configuration Types
-The app handles these configuration file types:
 - `user` - `~/.claude/settings.json`
 - `enterprise_macos/linux/windows` - System-wide managed settings
 - `mcp_macos/linux/windows` - System-wide MCP configurations
 
 ### Data Flow
-1. React Query hooks in `src/lib/query.ts` call Tauri commands
-2. Tauri commands in `src-tauri/src/commands.rs` handle file I/O
-3. Frontend displays config content in a textarea with JSON validation
-4. Changes are saved back via mutations that invalidate relevant queries
+1. React Query hooks in `src/lib/query.ts` call `invoke()` from `utools-adapter.ts`
+2. `utools-adapter.ts` translates Tauri-style snake_case commands to camelCase
+3. `window.services` (preload) handles file I/O via Node.js APIs
+4. Frontend displays data with React Query caching and mutations
+
+### Plugin Features (plugin.json)
+- `ccmate` - Main entry, opens config switcher
+- `ccmate_configs` - Quick config switch
+- `ccmate_mcp` - MCP server management
+- `ccmate_usage` - Usage statistics
+- `ccmate_memory` - Memory file editing
 
 ## Code Principles
 
 - Use functional components and hooks
-- Do not use export default to export components
-- Place React Query/mutation logic in `src/lib/query.ts` by default
-- Write Tauri commands in `src-tauri/src/commands.rs` with well-designed names
+- Do not use `export default` to export components
+- Place React Query/mutation logic in `src/lib/query.ts`
+- Write preload services in `public/preload/services.js` with camelCase names
 - Do not separate components into smaller files unless explicitly requested
-- Use `pnpm tsc --noEmit` instead of `pnpm tauri dev` to check TypeScript lint errors after modifying frontend code
+- Use `pnpm tsc --noEmit` to check TypeScript errors
 
 ## Important Notes
 
-- The app automatically backs up existing Claude configs on first run to `~/.ccconfig/claude_backup/`
+- **Chromium 91 compatibility**: utools uses Chromium 91, so avoid modern CSS features like `oklch()` colors
+- **Tailwind v3**: Using v3 for browser compatibility (not v4)
+- **Preload CommonJS**: `public/preload/` uses CommonJS (`require`) despite project being ES modules
+- The app backs up existing Claude configs on first run to `~/.ccconfig/claude_backup/`
 - Enterprise config files are read-only
-- All file operations use async/await patterns
 - JSON validation is performed client-side before saving
-- DO NOT use --yes for shadcn/ui components installation
+- DO NOT use `--yes` for shadcn/ui components installation
+
+## utools Plugin Development
+
+### Development Port
+Development server runs on port 5173. Update `plugin.json` if port changes:
+```json
+"development": {
+  "main": "http://localhost:5173"
+}
+```
+
+### Services API Pattern
+Services follow this pattern in preload:
+```javascript
+// public/preload/services.js
+exports.getStores = function() { /* ... */ }
+exports.createConfig = function(id, title, settings) { /* ... */ }
+```
+
+Accessed via adapter:
+```typescript
+// src/lib/utools-adapter.ts
+invoke("get_stores")        // → window.services.getStores()
+invoke("create_config", {id, title, settings})  // → window.services.createConfig(id, title, settings)
+```
+
+### Dialog and External URLs
+Use `src/lib/utools-dialog.ts` instead of Tauri plugins:
+```typescript
+import { ask, message, openUrl } from "@/lib/utools-dialog";
+```
 
 ## Use exa by Default
-Always use exa when I need code generation, library installation, setup or configuration steps, or library/API documentation. This means you should automatically use the exa MCP tools get library docs without me having to explicitly ask.
+Always use exa when I need code generation, library installation, setup or configuration steps, or library/API documentation. This means you should automatically use the exa MCP tools to get library docs without me having to explicitly ask.

@@ -4,7 +4,7 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "@/lib/utools-adapter";
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
 import i18n from "../i18n";
@@ -152,7 +152,6 @@ export const useCreateConfig = () => {
 			toast.success(i18n.t("toast.storeCreated"));
 			queryClient.invalidateQueries({ queryKey: ["stores"] });
 			queryClient.invalidateQueries({ queryKey: ["current-store"] });
-			await rebuildTrayMenu();
 		},
 		onError: (error) => {
 			const errorMessage =
@@ -174,7 +173,6 @@ export const useDeleteConfig = () => {
 			toast.success(i18n.t("toast.storeDeleted"));
 			queryClient.invalidateQueries({ queryKey: ["stores"] });
 			queryClient.invalidateQueries({ queryKey: ["current-store"] });
-			await rebuildTrayMenu();
 		},
 		onError: (error) => {
 			const errorMessage =
@@ -258,7 +256,6 @@ export const useUpdateConfig = () => {
 			if (data.using) {
 				queryClient.invalidateQueries({ queryKey: ["config-file", "user"] });
 			}
-			await rebuildTrayMenu();
 		},
 		onError: (error) => {
 			const errorMessage =
@@ -614,13 +611,4 @@ export const useDeleteClaudeAgent = () => {
 			toast.error(`Failed to delete agent: ${errorMessage}`);
 		},
 	});
-};
-
-// Helper function to rebuild tray menu
-const rebuildTrayMenu = async () => {
-	try {
-		await invoke<void>("rebuild_tray_menu_command");
-	} catch (error) {
-		console.error("Failed to rebuild tray menu:", error);
-	}
 };

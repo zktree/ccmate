@@ -1,5 +1,3 @@
-import { getVersion } from "@tauri-apps/api/app";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { DownloadIcon, ExternalLinkIcon, RotateCwIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -14,6 +12,20 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useCheckForUpdates, useInstallAndRestart } from "@/lib/query";
+
+// Get version from package.json
+const getVersion = async () => {
+	return "1.0.0"; // TODO: Read from plugin.json
+};
+
+// Open URL in external browser
+const openUrl = (url: string) => {
+	if (window.utools) {
+		window.utools.shellOpenExternal?.(url);
+	} else {
+		window.open(url, "_blank");
+	}
+};
 
 export function SettingsPage() {
 	const { t, i18n } = useTranslation();
@@ -40,10 +52,9 @@ export function SettingsPage() {
 		<div className="">
 			<div
 				className="flex items-center p-3 border-b px-3 justify-between sticky top-0 bg-background z-10 mb-4"
-				data-tauri-drag-region
 			>
-				<div data-tauri-drag-region>
-					<h3 className="font-bold" data-tauri-drag-region>
+				<div>
+					<h3 className="font-bold">
 						{t("settings.title")}
 					</h3>
 				</div>

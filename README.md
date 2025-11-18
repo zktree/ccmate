@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**A modern desktop application for managing Claude Code configuration files**
+**A modern utools plugin for managing Claude Code configuration files**
 
 [Download Latest Release](https://randynamic.org/ccmate) • [Report Issues](https://github.com/djyde/ccconfig/issues) • [Contributing Guide](CONTRIBUTING.md)
 
@@ -36,26 +36,65 @@ Want to become a sponsor? Contact https://x.com/randyloop
 - **🤖 Agent Management** - Manage Claude Code agents and their settings
 - **📋 Global Commands** - Configure and organize global commands
 - **📝 CLAUDE.md Integration** - Read and write global CLAUDE.md memory files
-- **🔔 Notifications**
 - **📊 Usage Analytics** - Track and analyze your Claude Code usage
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- [utools](https://u.tools/) - Download and install utools desktop application
+
 ### Download & Install
 
-1. **Download the latest release** from [randynamic.org/ccmate](https://randynamic.org/ccmate)
-2. **Install the application** for your platform:
-   - **macOS**: Download the `.dmg` file and drag to Applications
-   - **Windows**: Download the `.exe` installer and run it
-   - **Linux**: Download the `.AppImage` or `.deb` package
-3. **Launch CC Mate** from your applications folder
+1. **Download the latest plugin** from [randynamic.org/ccmate](https://randynamic.org/ccmate) or the [Releases page](https://github.com/djyde/ccconfig/releases)
+2. **Install the `.upx` plugin** by one of these methods:
+   - Drag and drop the `.upx` file into utools window
+   - Open utools settings → Plugin → Install from local file
+3. **Launch CC Mate** by typing `ccmate` or `cc` in utools search bar
+
+### Quick Access
+
+- `ccmate` or `cc` - Open main interface
+- `切换配置` or `switch config` - Quick config switcher
+- `mcp` - MCP server management
+- `usage` or `使用量` - Usage statistics
+- `memory` or `记忆` - Edit CLAUDE.md file
+
+## 🛠️ Development
+
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build plugin
+pnpm build
+
+# Build and pack .upx plugin
+pnpm build:utools
+```
+
+### Tech Stack
+
+- **Frontend**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS v3
+- **UI Components**: shadcn/ui (Radix UI based)
+- **State Management**: @tanstack/react-query
+- **Routing**: react-router-dom v7
+- **i18n**: i18next (en, zh, ja, fr)
+
+See [CLAUDE.md](CLAUDE.md) for detailed architecture documentation.
 
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
 
 - Setting up the development environment
-- Building and testing the application
+- Building and testing the plugin
 - Code style and guidelines
 - Submitting pull requests
 
@@ -63,15 +102,19 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ### Common Issues
 
-**Application won't start**
-- Check if you have the latest version installed
-- Verify system requirements are met
-- Try running from terminal to see error messages
+**Plugin won't load**
+- Ensure utools is up to date
+- Try reinstalling the plugin
+- Check utools developer console for errors
 
 **Configurations not loading**
 - Ensure Claude Code is installed and has been run at least once
 - Check file permissions in `~/.claude/` directory
-- Verify backup files weren't corrupted
+- Verify backup files in `~/.ccconfig/claude_backup/`
+
+**Styling issues**
+- The plugin uses Tailwind CSS v3 for compatibility with utools (Chromium 91)
+- Clear utools cache and reload plugin
 
 ### Getting Help
 

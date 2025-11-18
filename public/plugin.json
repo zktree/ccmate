@@ -1,0 +1,42 @@
+{
+  "name": "ccmate",
+  "pluginName": "CC Mate",
+  "description": "Claude Code 配置管理工具 - 多配置切换、MCP服务器管理、使用量统计分析",
+  "author": "CCMate Team",
+  "homepage": "https://randynamic.org/ccmate",
+  "version": "1.0.0",
+  "logo": "logo.png",
+  "platform": ["darwin", "win32", "linux"],
+  "features": [
+    {
+      "code": "ccmate",
+      "explain": "打开 CC Mate 配置管理",
+      "cmds": ["ccmate", "cc", "claude config", "cc配置", "claude"]
+    },
+    {
+      "code": "ccmate_configs",
+      "explain": "快速切换 Claude Code 配置",
+      "cmds": ["切换配置", "switch config", "配置切换"]
+    },
+    {
+      "code": "ccmate_mcp",
+      "explain": "管理 MCP 服务器",
+      "cmds": ["mcp", "mcp服务器", "MCP"]
+    },
+    {
+      "code": "ccmate_usage",
+      "explain": "查看 Claude Code 使用量统计",
+      "cmds": ["使用量", "usage", "统计"]
+    },
+    {
+      "code": "ccmate_memory",
+      "explain": "编辑 CLAUDE.md 记忆文件",
+      "cmds": ["memory", "记忆", "CLAUDE.md"]
+    }
+  ],
+  "development": {
+    "main": "http://localhost:5173"
+  },
+  "main": "dist/index.html",
+  "preload": "preload/services.js"
+}

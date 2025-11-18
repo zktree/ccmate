@@ -1,4 +1,3 @@
-import { platform } from "@tauri-apps/plugin-os";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,7 +9,10 @@ export function cx(...inputs: ClassValue[]) {
 	return clsx(inputs);
 }
 
-export const isMacOS = platform() === "macos";
+// 使用 utools API 检测平台
+export const isMacOS = typeof window !== 'undefined' && window.utools
+	? window.utools.isMacOs()
+	: navigator.platform.toLowerCase().includes('mac');
 
 export function formatLargeNumber(num: number): string {
 	if (num >= 1e9) {

@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "@/lib/utools-adapter";
 
 export enum TrackEvent {
 	AppLaunched = "app_launched",
