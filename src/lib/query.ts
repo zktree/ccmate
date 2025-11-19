@@ -187,9 +187,16 @@ export const useSetUsingConfig = () => {
 
 	return useMutation({
 		mutationFn: (storeId: string) =>
-			invoke<void>("set_using_config", { storeId }),
-		onSuccess: () => {
-			toast.success(i18n.t("toast.storeActivated"));
+			invoke<ConfigStore>("set_using_config", { storeId }),
+		onSuccess: (store) => {
+			// 显示切换成功的通知，包含配置名称
+			if (window.utools) {
+				window.utools.showNotification(
+					i18n.t("configQuickSwitch.switchSuccess", { title: store.title })
+				);
+			} else {
+				toast.success(i18n.t("toast.storeActivated"));
+			}
 			queryClient.invalidateQueries({ queryKey: ["stores"] });
 			queryClient.invalidateQueries({ queryKey: ["current-store"] });
 			queryClient.invalidateQueries({ queryKey: ["config-file", "user"] });
@@ -197,7 +204,11 @@ export const useSetUsingConfig = () => {
 		onError: (error) => {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error);
-			toast.error(i18n.t("toast.storeActivateFailed", { error: errorMessage }));
+			if (window.utools) {
+				window.utools.showNotification(i18n.t("configQuickSwitch.switchError"));
+			} else {
+				toast.error(i18n.t("toast.storeActivateFailed", { error: errorMessage }));
+			}
 		},
 	});
 };
@@ -207,11 +218,26 @@ export const useSetCurrentConfig = () => {
 
 	return useMutation({
 		mutationFn: (storeId: string) =>
-			invoke<void>("set_using_config", { storeId }),
-		onSuccess: () => {
+			invoke<ConfigStore>("set_using_config", { storeId }),
+		onSuccess: (store) => {
+			// 显示切换成功的通知，包含配置名称
+			if (window.utools) {
+				window.utools.showNotification(
+					i18n.t("configQuickSwitch.switchSuccess", { title: store.title })
+				);
+			}
 			queryClient.invalidateQueries({ queryKey: ["stores"] });
 			queryClient.invalidateQueries({ queryKey: ["current-store"] });
 			queryClient.invalidateQueries({ queryKey: ["config-file", "user"] });
+		},
+		onError: (error) => {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			if (window.utools) {
+				window.utools.showNotification(i18n.t("configQuickSwitch.switchError"));
+			} else {
+				toast.error(i18n.t("toast.storeActivateFailed", { error: errorMessage }));
+			}
 		},
 	});
 };

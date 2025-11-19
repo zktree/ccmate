@@ -16,7 +16,14 @@
     {
       "code": "ccmate_configs",
       "explain": "快速切换 Claude Code 配置",
-      "cmds": ["切换配置", "switch config", "配置切换"]
+      "mainPush": true,
+      "cmds": ["切换配置", "switch config", "配置切换",
+        {
+          "type": "over",
+          "label": "switch config",
+          "maxLength": 5000
+        }
+      ]
     },
     {
       "code": "ccmate_mcp",
@@ -37,6 +44,6 @@
   "development": {
     "main": "http://localhost:5173"
   },
-  "main": "dist/index.html",
+  "main": "index.html",
   "preload": "preload/services.js"
 }

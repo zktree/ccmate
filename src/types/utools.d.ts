@@ -14,7 +14,7 @@ interface UtoolsServices {
   createConfig(id: string, title: string, settings: any): ConfigStore;
   updateConfig(storeId: string, title: string, settings: any): ConfigStore;
   deleteConfig(storeId: string): void;
-  setUsingConfig(storeId: string): void;
+  setUsingConfig(storeId: string): ConfigStore;
   getCurrentStore(): ConfigStore | null;
   getStore(storeId: string): ConfigStore;
   resetToOriginalConfig(): void;
@@ -146,6 +146,10 @@ export interface UpdateInfo {
 interface Utools {
   onPluginEnter(callback: (action: PluginEnterAction) => void): void;
   onPluginOut(callback: (isKill: boolean) => void): void;
+  onMainPush(
+    callback: (action: PluginEnterAction, callbackSetList: CallbackSetList) => void,
+    onSelect?: (item: MainPushResult) => void
+  ): void;
   showNotification(text: string, clickFeatureCode?: string): void;
   shellOpenPath(fullPath: string): void;
   shellOpenExternal?(url: string): void;
@@ -168,6 +172,16 @@ interface PluginEnterAction {
   payload: any;
   option?: any;
 }
+
+interface MainPushResult {
+  text: string;
+  title?: string;
+  description?: string;
+  icon?: string;
+  data?: any;
+}
+
+type CallbackSetList = (items: MainPushResult[]) => void;
 
 // 全局声明
 declare global {

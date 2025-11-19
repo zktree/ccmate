@@ -368,6 +368,7 @@ exports.deleteConfig = (storeId) => {
 
 /**
  * 切换当前使用的配置
+ * 返回切换后的配置信息
  */
 exports.setUsingConfig = (storeId) => {
   const homeDir = getHomeDir();
@@ -381,10 +382,12 @@ exports.setUsingConfig = (storeId) => {
 
   // Set all stores to not using, then set selected one to using
   let selectedSettings = null;
+  let selectedStore = null;
   for (const store of storesData.configs) {
     if (store.id === storeId) {
       store.using = true;
       selectedSettings = store.settings;
+      selectedStore = store;
     } else {
       store.using = false;
     }
@@ -410,6 +413,9 @@ exports.setUsingConfig = (storeId) => {
   }
 
   saveStoresData(storesData);
+
+  // 返回选中的配置信息，用于前端显示通知
+  return selectedStore;
 };
 
 /**
