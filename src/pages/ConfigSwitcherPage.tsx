@@ -1,7 +1,8 @@
 import { Kimi, Minimax, ZAI } from "@lobehub/icons";
-import { EllipsisVerticalIcon, PencilLineIcon, PlusIcon } from "lucide-react";
+import { CopyIcon, EllipsisVerticalIcon, PencilLineIcon, PlusIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { GLMDialog } from "@/components/GLMBanner";
 import { KimiDialog } from "@/components/KimiDialog";
 import { MiniMaxDialog } from "@/components/MiniMaxDialog";
@@ -13,6 +14,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
 	useCreateConfig,
@@ -36,6 +38,7 @@ function ConfigStores() {
 	const { data: stores } = useStores();
 	const setCurrentStoreMutation = useSetCurrentConfig();
 	const resetToOriginalMutation = useResetToOriginalConfig();
+	const createConfigMutation = useCreateConfig();
 	const navigate = useNavigate();
 
 	const isOriginalConfigActive = !stores.some((store) => store.using);
@@ -49,6 +52,19 @@ function ConfigStores() {
 	const handleOriginalConfigClick = () => {
 		if (!isOriginalConfigActive) {
 			resetToOriginalMutation.mutate();
+		}
+	};
+
+	const handleCopyConfig = async (e: React.MouseEvent, store: { id: string; title: string; settings: any }) => {
+		e.stopPropagation();
+		try {
+			await createConfigMutation.mutateAsync({
+				title: `${store.title} (${t("configSwitcher.copy")})`,
+				settings: store.settings,
+			});
+			toast.success(t("configSwitcher.copySuccess"));
+		} catch (error) {
+			toast.error(t("configSwitcher.copyError"));
 		}
 	};
 
@@ -122,132 +138,156 @@ function ConfigStores() {
 	}
 
 	return (
-		<div className="">
-			<div
-				className="flex items-center p-3 border-b px-3 justify-between sticky top-0 bg-background z-10"
-				data-tauri-drag-region
-			>
-				<div data-tauri-drag-region>
-					<h3 className="font-bold" data-tauri-drag-region>
-						{t("configSwitcher.title")}
-					</h3>
-					<p className="text-sm text-muted-foreground" data-tauri-drag-region>
-						{t("configSwitcher.description")}
-					</p>
-				</div>
-				<ButtonGroup>
-					<Button
-						variant="outline"
-						onClick={onCreateStore}
-						className="text-muted-foreground"
-						size="sm"
-					>
-						<PlusIcon size={14} />
-						{t("configSwitcher.createConfig")}
-					</Button>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button
-								variant="outline"
-								className="text-muted-foreground"
-								size="sm"
-							>
-								<EllipsisVerticalIcon size={14} />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<GLMDialog
-								trigger={
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<ZAI />
-										{t("glm.useZhipuGlm")}
-									</DropdownMenuItem>
-								}
-							/>
-							<MiniMaxDialog
-								trigger={
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<Minimax />
-										{t("minimax.useMiniMax")}
-									</DropdownMenuItem>
-								}
-							/>
-							<KimiDialog
-								trigger={
-									<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-										<Kimi />
-										{t("kimi.useKimi")}
-									</DropdownMenuItem>
-								}
-							/>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</ButtonGroup>
-			</div>
-
-			{/* <GLMBanner className="mx-4 mt-4" /> */}
-
-			<div className="grid grid-cols-3 lg:grid-cols-4 gap-3 p-4">
-				{/* Fixed Claude Original Config Item */}
+		<TooltipProvider>
+			<div className="">
 				<div
-					role="button"
-					onClick={handleOriginalConfigClick}
-					className={cn(
-						"border rounded-xl p-3 h-[100px] flex flex-col justify-between transition-colors",
-						{
-							"bg-primary/10 border-primary border-2": isOriginalConfigActive,
-						},
-					)}
+					className="flex items-center p-3 border-b px-3 justify-between sticky top-0 bg-background z-10"
+					data-tauri-drag-region
 				>
-					<div>
-						<div>{t("configSwitcher.originalConfig")}</div>
-						<div className="text-xs text-muted-foreground mt-1">
-							{t("configSwitcher.originalConfigDescription")}
+					<div data-tauri-drag-region>
+						<h3 className="font-bold" data-tauri-drag-region>
+							{t("configSwitcher.title")}
+						</h3>
+						<p className="text-sm text-muted-foreground" data-tauri-drag-region>
+							{t("configSwitcher.description")}
+						</p>
+					</div>
+					<ButtonGroup>
+						<Button
+							variant="outline"
+							onClick={onCreateStore}
+							className="text-muted-foreground"
+							size="sm"
+						>
+							<PlusIcon size={14} />
+							{t("configSwitcher.createConfig")}
+						</Button>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="outline"
+									className="text-muted-foreground"
+									size="sm"
+								>
+									<EllipsisVerticalIcon size={14} />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<GLMDialog
+									trigger={
+										<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+											<ZAI />
+											{t("glm.useZhipuGlm")}
+										</DropdownMenuItem>
+									}
+								/>
+								<MiniMaxDialog
+									trigger={
+										<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+											<Minimax />
+											{t("minimax.useMiniMax")}
+										</DropdownMenuItem>
+									}
+								/>
+								<KimiDialog
+									trigger={
+										<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+											<Kimi />
+											{t("kimi.useKimi")}
+										</DropdownMenuItem>
+									}
+								/>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</ButtonGroup>
+				</div>
+
+				{/* <GLMBanner className="mx-4 mt-4" /> */}
+
+				<div className="grid grid-cols-3 lg:grid-cols-4 gap-3 p-4">
+					{/* Fixed Claude Original Config Item */}
+					<div
+						role="button"
+						onClick={handleOriginalConfigClick}
+						className={cn(
+							"border rounded-xl p-3 h-[100px] flex flex-col justify-between transition-colors",
+							{
+								"bg-primary/10 border-primary border-2": isOriginalConfigActive,
+							},
+						)}
+					>
+						<div>
+							<div>{t("configSwitcher.originalConfig")}</div>
+							<div className="text-xs text-muted-foreground mt-1">
+								{t("configSwitcher.originalConfigDescription")}
+							</div>
 						</div>
 					</div>
-				</div>
 
-				{stores.map((store) => {
-					const isCurrentStore = store.using;
-					return (
-						<div
-							role="button"
-							key={store.id}
-							onClick={() => handleStoreClick(store.id, isCurrentStore)}
-							className={cn(
-								"border rounded-xl p-3 h-[100px] flex flex-col justify-between transition-colors disabled:opacity-50",
-								{
-									"bg-primary/10 border-primary border-2": isCurrentStore,
-								},
-							)}
-						>
-							<div>
-								<div>{store.title}</div>
-								{store.settings.env?.ANTHROPIC_BASE_URL && (
-									<div
-										className="text-xs text-muted-foreground mt-1 truncate "
-										title={store.settings.env.ANTHROPIC_BASE_URL}
-									>
-										{store.settings.env.ANTHROPIC_BASE_URL}
-									</div>
+					{stores.map((store) => {
+						const isCurrentStore = store.using;
+						return (
+							<div
+								role="button"
+								key={store.id}
+								onClick={() => handleStoreClick(store.id, isCurrentStore)}
+								className={cn(
+									"border rounded-xl p-3 h-[100px] flex flex-col justify-between transition-colors disabled:opacity-50",
+									{
+										"bg-primary/10 border-primary border-2": isCurrentStore,
+									},
 								)}
-							</div>
+							>
+								<div>
+									<div>{store.title}</div>
+									{store.settings.env?.ANTHROPIC_BASE_URL && (
+										<div
+											className="text-xs text-muted-foreground mt-1 truncate "
+											title={store.settings.env.ANTHROPIC_BASE_URL}
+										>
+											{store.settings.env.ANTHROPIC_BASE_URL}
+										</div>
+									)}
+								</div>
 
-							<div className="flex justify-end">
-								<button
-									className="hover:bg-primary/10 rounded-lg p-2 hover:text-primary"
-									onClick={(e) => {
-										e.stopPropagation();
-										navigate(`/edit/${store.id}`);
-									}}
-								>
-									<PencilLineIcon className="text-muted-foreground" size={14} />
-								</button>
+								<div className="flex justify-end gap-1">
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<button
+												className="hover:bg-primary/10 rounded-lg p-2 hover:text-primary"
+												onClick={(e) => handleCopyConfig(e, store)}
+												disabled={createConfigMutation.isPending}
+											>
+												<CopyIcon className="text-muted-foreground" size={14} />
+											</button>
+										</TooltipTrigger>
+										<TooltipContent>
+											{t("configSwitcher.copyConfig")}
+										</TooltipContent>
+									</Tooltip>
+
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<button
+												className="hover:bg-primary/10 rounded-lg p-2 hover:text-primary"
+												onClick={(e) => {
+													e.stopPropagation();
+													navigate(`/edit/${store.id}`);
+												}}
+											>
+												<PencilLineIcon className="text-muted-foreground" size={14} />
+											</button>
+										</TooltipTrigger>
+										<TooltipContent>
+											{t("configSwitcher.editConfig")}
+										</TooltipContent>
+									</Tooltip>
+								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</div>
-		</div>
+		</TooltipProvider>
 	);
 }
