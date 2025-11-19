@@ -1,12 +1,15 @@
 import { Kimi, ZAI } from "@lobehub/icons";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
 import { ask } from "@/lib/utools-dialog";
 import { get, isEmpty, isPlainObject, set, transform } from "lodash-es";
-import { ChevronLeftIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { ChevronLeftIcon, PlusIcon, TrashIcon, Wand2Icon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { match } from "ts-pattern";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -23,6 +26,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useCodeMirrorTheme } from "@/lib/use-codemirror-theme";
 import { useDeleteConfig, useStore, useUpdateConfig } from "../lib/query";
 
 type FieldConfig = {
@@ -612,6 +616,7 @@ export function ConfigEditorPage() {
 	const storeData = storeQuery.data;
 
 	const fields = createFields(t);
+	const codeMirrorTheme = useCodeMirrorTheme();
 
 	// Prepare default values from store data
 	const defaultValues: Record<string, any> = { configName: storeData.title };
@@ -627,8 +632,108 @@ export function ConfigEditorPage() {
 	const { register, control, handleSubmit, setValue } = useForm({
 		defaultValues,
 	});
+
+	// Tab state
+	const [currentTab, setCurrentTab] = useState<"form" | "json">("form");
+
+	// JSON editing state
+	const [jsonValue, setJsonValue] = useState("");
+	const [jsonError, setJsonError] = useState<string | null>(null);
+	const isUpdatingJsonRef = useRef(false);
+	const isUpdatingFormRef = useRef(false);
+
 	const [highlightedField, setHighlightedField] = useState<string | null>(null);
 	const highlightTimerRef = useRef<number | null>(null);
+
+	// Helper function to flatten nested JSON to lodash path format
+	const flattenJSON = useCallback((obj: any, prefix = ""): Record<string, any> => {
+		const result: Record<string, any> = {};
+
+		for (const key in obj) {
+			const path = prefix ? `${prefix}.${key}` : key;
+			if (isPlainObject(obj[key])) {
+				Object.assign(result, flattenJSON(obj[key], path));
+			} else {
+				result[path] = obj[key];
+			}
+		}
+
+		return result;
+	}, []);
+
+	// Convert form data to complete JSON (preserving unknown fields)
+	const formToCompleteJSON = useCallback((formData: Record<string, any>) => {
+		const { configName } = formData;
+		const converted = convertToNestedJSON(formData);
+
+		// Merge with original storeData.settings to preserve unknown fields
+		const merged = { ...storeData.settings, ...converted["settings.json"] };
+
+		return {
+			title: configName,
+			settings: merged,
+		};
+	}, [storeData.settings]);
+
+	// Watch all form fields for changes (Form → JSON)
+	const formValues = useWatch({ control });
+
+	useEffect(() => {
+		if (isUpdatingFormRef.current) {
+			isUpdatingFormRef.current = false;
+			return;
+		}
+
+		if (!formValues || Object.keys(formValues).length === 0) return;
+
+		isUpdatingJsonRef.current = true;
+		const complete = formToCompleteJSON(formValues);
+		setJsonValue(JSON.stringify(complete.settings, null, 2));
+		setJsonError(null);
+	}, [formValues, formToCompleteJSON]);
+
+	// Initialize JSON value on mount
+	useEffect(() => {
+		setJsonValue(JSON.stringify(storeData.settings, null, 2));
+	}, [storeData.settings]);
+
+	// Handle JSON editor changes (JSON → Form)
+	const handleJsonChange = useCallback((value: string) => {
+		setJsonValue(value);
+
+		if (isUpdatingJsonRef.current) {
+			isUpdatingJsonRef.current = false;
+			return;
+		}
+
+		try {
+			const parsed = JSON.parse(value);
+			setJsonError(null);
+
+			// Update form with parsed JSON
+			isUpdatingFormRef.current = true;
+			const flattened = flattenJSON(parsed);
+
+			// Update all form fields
+			Object.entries(flattened).forEach(([key, val]) => {
+				setValue(key, val);
+			});
+		} catch (error: any) {
+			setJsonError(error.message);
+		}
+	}, [flattenJSON, setValue]);
+
+	// Format JSON
+	const formatJson = useCallback(() => {
+		try {
+			const parsed = JSON.parse(jsonValue);
+			const formatted = JSON.stringify(parsed, null, 2);
+			setJsonValue(formatted);
+			setJsonError(null);
+		} catch (error: any) {
+			setJsonError(error.message);
+		}
+	}, [jsonValue]);
 
 	const applyPreset = (preset: "z.ai-china" | "kimi" | "z.ai") => {
 		console.log("Applying preset:", preset);
@@ -681,12 +786,32 @@ export function ConfigEditorPage() {
 	}, []);
 
 	const onSave = handleSubmit((formValues) => {
-		const { configName, ...rest } = convertToNestedJSON(formValues);
-		updateStore.mutate({
-			storeId: storeId!,
-			title: configName,
-			settings: rest["settings.json"],
-		});
+		// Check if JSON has errors
+		if (jsonError) {
+			return;
+		}
+
+		// If on JSON tab, save from JSON value
+		if (currentTab === "json") {
+			try {
+				const settings = JSON.parse(jsonValue);
+				updateStore.mutate({
+					storeId: storeId!,
+					title: formValues.configName,
+					settings,
+				});
+			} catch (error: any) {
+				setJsonError(error.message);
+			}
+		} else {
+			// Save from form
+			const complete = formToCompleteJSON(formValues);
+			updateStore.mutate({
+				storeId: storeId!,
+				title: complete.title,
+				settings: complete.settings,
+			});
+		}
 	});
 
 	const onDelete = async () => {
@@ -745,51 +870,73 @@ export function ConfigEditorPage() {
 					className="text-sm px-2 text-muted-foreground border rounded-sm w-[200px] h-7 bg-background"
 				/>
 			</section>
-			<section className="space-y-8 pb-8">
-				{fields.map((field) => (
-					<div key={field.sectionName}>
-						<h3 className="px-10 py-2 font-medium  text-muted-foreground text-sm">
-							{field.sectionName}
-						</h3>
-						<div className="mx-8 rounded-lg bg-card p-3 space-y-5 border">
-							{field.fields.map((field) => (
-								<div className="" key={field.name}>
-									<div className="flex gap-2 items-center justify-between">
-										<div className="space-y-1">
-											<div className="text-muted-foreground text-sm min-w-40 shrink-0">
-												{field.label}
-											</div>
-											{field.description && (
-												<p className="text-muted-foreground/50 text-sm line-clamp-1">
-													{field.description}
-												</p>
-											)}
-										</div>
-										{match({ type: field.type, name: field.name })
-											.with({ type: "boolean" }, () => (
-												<Controller
-													name={field.name}
-													control={control}
-													render={({ field: { onChange, value } }) => (
-														<Select
-															value={
-																value !== undefined ? String(value) : undefined
-															}
-															onValueChange={(val) => onChange(val === "true")}
-														>
-															<SelectTrigger
-																className={`w-1/2 ${highlightedField === field.name ? "animate-blink" : ""}`}
-															>
-																<SelectValue placeholder="Default" />
-															</SelectTrigger>
-															<SelectContent>
-																<SelectItem value="true">true</SelectItem>
-																<SelectItem value="false">false</SelectItem>
-															</SelectContent>
-														</Select>
+
+			<div className="px-8">
+				<div className="flex mb-3 gap-1">
+					<Button
+						size="sm"
+						variant={currentTab === "form" ? "secondary" : "ghost"}
+						className="text-sm"
+						onClick={() => setCurrentTab("form")}
+					>
+						{t("configEditor.tabs.form")}
+					</Button>
+					<Button
+						size="sm"
+						variant={currentTab === "json" ? "secondary" : "ghost"}
+						className="text-sm"
+						onClick={() => setCurrentTab("json")}
+					>
+						{t("configEditor.tabs.json")}
+					</Button>
+				</div>
+
+				{currentTab === "form" && (
+					<div className="space-y-8 pb-8 mt-3">
+						{fields.map((field) => (
+							<div key={field.sectionName}>
+								<h3 className="px-2 py-2 font-medium  text-muted-foreground text-sm">
+									{field.sectionName}
+								</h3>
+								<div className="rounded-lg bg-card p-3 space-y-5 border">
+									{field.fields.map((field) => (
+										<div className="" key={field.name}>
+											<div className="flex gap-2 items-center justify-between">
+												<div className="space-y-1">
+													<div className="text-muted-foreground text-sm min-w-40 shrink-0">
+														{field.label}
+													</div>
+													{field.description && (
+														<p className="text-muted-foreground/50 text-sm line-clamp-1">
+															{field.description}
+														</p>
 													)}
-												/>
-											))
+												</div>
+												{match({ type: field.type, name: field.name })
+													.with({ type: "boolean" }, () => (
+														<Controller
+															name={field.name}
+															control={control}
+															render={({ field: { onChange, value } }) => (
+																<Select
+																	value={
+																		value !== undefined ? String(value) : undefined
+																	}
+																	onValueChange={(val) => onChange(val === "true")}
+																>
+																	<SelectTrigger
+																		className={`w-1/2 ${highlightedField === field.name ? "animate-blink" : ""}`}
+																	>
+																		<SelectValue placeholder="Default" />
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectItem value="true">true</SelectItem>
+																		<SelectItem value="false">false</SelectItem>
+																	</SelectContent>
+																</Select>
+															)}
+														/>
+													))
 											.with({ type: "select" }, () => (
 												<Controller
 													name={field.name}
@@ -899,7 +1046,68 @@ export function ConfigEditorPage() {
 						</div>
 					</div>
 				))}
-			</section>
+					</div>
+				)}
+
+				{currentTab === "json" && (
+					<div className="space-y-4 pb-8 mt-3">
+						<div className="flex items-center justify-between">
+							<p className="text-sm text-muted-foreground">
+								直接编辑配置 JSON（支持实时同步到表单）
+							</p>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={formatJson}
+								disabled={!!jsonError}
+							>
+								<Wand2Icon className="h-3.5 w-3.5 mr-1" />
+								{t("configEditor.formatJson")}
+							</Button>
+						</div>
+
+						{jsonError && (
+							<Alert variant="destructive">
+								<AlertDescription>
+									{t("configEditor.invalidJson", { error: jsonError })}
+								</AlertDescription>
+							</Alert>
+						)}
+
+						<div className="border rounded-lg overflow-hidden">
+							<CodeMirror
+								value={jsonValue}
+								height="600px"
+								theme={codeMirrorTheme}
+								extensions={[json()]}
+								onChange={handleJsonChange}
+								basicSetup={{
+								lineNumbers: true,
+								highlightActiveLineGutter: true,
+								highlightSpecialChars: true,
+								foldGutter: true,
+								dropCursor: true,
+								allowMultipleSelections: true,
+								indentOnInput: true,
+								bracketMatching: true,
+								closeBrackets: true,
+								autocompletion: true,
+								rectangularSelection: true,
+								crosshairCursor: true,
+								highlightActiveLine: true,
+								highlightSelectionMatches: true,
+								closeBracketsKeymap: true,
+								searchKeymap: true,
+								foldKeymap: true,
+								completionKeymap: true,
+								lintKeymap: true,
+							}}
+						/>
+					</div>
+				</div>
+				)}
+			</div>
 		</div>
 	);
 }
