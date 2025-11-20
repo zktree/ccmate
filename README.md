@@ -1,10 +1,13 @@
 # CC Mate - Configure your Claude Code without pain
 
+> A [utools](https://u.tools/) plugin for managing Claude Code configuration files
+> Forked from [djyde/ccmate](https://github.com/djyde/ccmate)
+
 <div align="center">
 
-**A modern utools plugin for managing Claude Code configuration files**
+**Manage Claude Code configurations, MCP servers, and usage analytics within utools**
 
-[Download Latest Release](https://randynamic.org/ccmate) • [Report Issues](https://github.com/djyde/ccconfig/issues) • [Contributing Guide](CONTRIBUTING.md)
+[Download Latest Release](https://github.com/zktree/ccmate/releases) • [Report Issues](https://github.com/zktree/ccmate/issues) • [Contributing Guide](CONTRIBUTING.md)
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
@@ -46,7 +49,7 @@ Want to become a sponsor? Contact https://x.com/randyloop
 
 ### Download & Install
 
-1. **Download the latest plugin** from [randynamic.org/ccmate](https://randynamic.org/ccmate) or the [Releases page](https://github.com/djyde/ccconfig/releases)
+1. **Download the latest plugin** from the [Releases page](https://github.com/zktree/ccmate/releases)
 2. **Install the `.upx` plugin** by one of these methods:
    - Drag and drop the `.upx` file into utools window
    - Open utools settings → Plugin → Install from local file
@@ -118,9 +121,9 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ### Getting Help
 
-- 📖 [Documentation](https://github.com/djyde/ccconfig/wiki)
-- 🐛 [Report Issues](https://github.com/djyde/ccconfig/issues)
-- 💬 [Discussions](https://github.com/djyde/ccconfig/discussions)
+- 📖 [Documentation](https://github.com/zktree/ccmate/wiki)
+- 🐛 [Report Issues](https://github.com/zktree/ccmate/issues)
+- 💬 [Discussions](https://github.com/zktree/ccmate/discussions)
 - 📋 [Contributing Guide](CONTRIBUTING.md)
 
 ## 📄 License
@@ -135,6 +138,6 @@ See the [LICENSE](LICENSE) file for details.
 
 **Made with ❤️ by the community**
 
-[⭐ Star this repo](https://github.com/djyde/ccconfig) • [🐦 Follow updates](https://github.com/djyde/ccconfig/releases)
+[⭐ Star this repo](https://github.com/zktree/ccmate) • [🐦 Follow updates](https://github.com/zktree/ccmate/releases)
 
 </div>
